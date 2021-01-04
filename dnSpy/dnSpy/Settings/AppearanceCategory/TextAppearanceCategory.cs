@@ -31,7 +31,7 @@ using Microsoft.VisualStudio.Text.Classification;
 
 namespace dnSpy.Settings.AppearanceCategory {
 	interface ITextAppearanceCategory {
-		event EventHandler SettingsChanged;
+		event EventHandler? SettingsChanged;
 		ResourceDictionary CreateResourceDictionary(ITheme theme);
 	}
 
@@ -61,7 +61,7 @@ namespace dnSpy.Settings.AppearanceCategory {
 			var newActive = ThemeFontSettings.Active;
 			if (activeFontSettings == newActive)
 				return;
-			if (!(activeFontSettings is null))
+			if (activeFontSettings is not null)
 				activeFontSettings.PropertyChanged -= ActiveFontSettings_PropertyChanged;
 			activeFontSettings = newActive;
 			activeFontSettings.PropertyChanged += ActiveFontSettings_PropertyChanged;
@@ -74,7 +74,7 @@ namespace dnSpy.Settings.AppearanceCategory {
 
 		public void ClearCache() => resourceDictionary = null;
 		public void OnThemeChanged() => RaiseSettingsChanged();
-		public event EventHandler SettingsChanged;
+		public event EventHandler? SettingsChanged;
 
 		void RaiseSettingsChanged() {
 			ClearCache();
@@ -89,7 +89,7 @@ namespace dnSpy.Settings.AppearanceCategory {
 		}
 
 		ResourceDictionary CreateResourceDictionaryCore(ITheme theme) {
-			Debug.Assert(!(activeFontSettings is null));
+			Debug2.Assert(activeFontSettings is not null);
 			var res = new ResourceDictionary();
 
 			var tc = theme.GetColor(def.ColorType);

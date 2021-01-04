@@ -88,7 +88,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 		public void Reset(bool loadConfig = true) {
 			if (!CanReset)
 				return;
-			if (!(execState is null)) {
+			if (execState is not null) {
 				execState.CancellationTokenSource.Cancel();
 				try {
 					execState.Globals.RaiseScriptResetting();
@@ -212,7 +212,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 		}
 
 		public bool IsCommand(string text) {
-			if (!(ParseScriptCommand(text) is null))
+			if (ParseScriptCommand(text) is not null)
 				return true;
 			return IsCompleteSubmission(text);
 		}
@@ -254,8 +254,8 @@ namespace dnSpy.Scripting.Roslyn.Common {
 		IEnumerable<string> GetDefaultLoadPaths() => GetDefaultScriptFilePaths();
 
 		void InitializeExecutionEngine(bool loadConfig, bool showHelp) {
-			Debug.Assert(execState is null);
-			if (!(execState is null))
+			Debug2.Assert(execState is null);
+			if (execState is not null)
 				throw new InvalidOperationException();
 
 			execState = new ExecState(this, dispatcher, new CancellationTokenSource());
@@ -315,7 +315,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 		public Task OnCommandUpdatedAsync(IReplCommandInput command, CancellationToken cancellationToken) {
 			if (isResetting)
 				return Task.CompletedTask;
-			Debug.Assert(!(execState is null));
+			Debug2.Assert(execState is not null);
 			if (execState is null)
 				throw new InvalidOperationException();
 
@@ -350,20 +350,20 @@ namespace dnSpy.Scripting.Roslyn.Common {
 		protected abstract Compilation CreateScriptCompilation(string assemblyName, SyntaxTree syntaxTree, IEnumerable<MetadataReference>? references, CompilationOptions options, Compilation previousScriptCompilation, Type returnType, Type globalsType);
 
 		bool ExecuteCommandInternal(string input) {
-			Debug.Assert(!(execState is null) && !execState.IsInitializing);
+			Debug2.Assert(execState is not null && !execState.IsInitializing);
 			if (execState is null || execState.IsInitializing)
 				return true;
 			lock (lockObj) {
-				Debug.Assert(execState.ExecTask is null && !execState.Executing);
-				if (!(execState.ExecTask is null) || execState.Executing)
+				Debug2.Assert(execState.ExecTask is null && !execState.Executing);
+				if (execState.ExecTask is not null || execState.Executing)
 					return true;
 				execState.Executing = true;
 			}
 
 			try {
 				var scState = ParseScriptCommand(input);
-				if (!(scState is null)) {
-					if (!(execState is null)) {
+				if (scState is not null) {
+					if (execState is not null) {
 						lock (lockObj)
 							execState.Executing = false;
 					}
@@ -397,13 +397,13 @@ namespace dnSpy.Scripting.Roslyn.Common {
 						}
 						if (isActive) {
 							try {
-								if (!(ex is null))
+								if (ex is not null)
 									ReplEditor.OutputPrint(Format(ex.InnerException!), BoxedTextColor.Error, true);
 
 								if (!t.IsCanceled && !t.IsFaulted) {
 									oldState.ScriptState = t.Result;
 									var val = t.Result.ReturnValue;
-									if (!(val is null))
+									if (val is not null)
 										ObjectOutputLine(BoxedTextColor.ReplOutputText, oldState.Globals.PrintOptionsImpl, val, true);
 								}
 							}
@@ -414,7 +414,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 					}, CancellationToken.None, TaskContinuationOptions.None, taskSched);
 				})
 				.ContinueWith(t => {
-					if (!(execState is null)) {
+					if (execState is not null) {
 						lock (lockObj)
 							execState.Executing = false;
 					}
@@ -427,7 +427,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 						CommandExecuted();
 					else {
 						var ex = t.Exception;
-						if (!(ex is null)) {
+						if (ex is not null) {
 							ReplEditor.OutputPrint(ex.ToString(), BoxedTextColor.Error, true);
 							CommandExecuted();
 						}
@@ -437,7 +437,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 				return true;
 			}
 			catch (Exception ex) {
-				if (!(execState is null)) {
+				if (execState is not null) {
 					lock (lockObj)
 						execState.Executing = false;
 				}
@@ -498,7 +498,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 			ReplEditor.OnCommandExecuted();
 			OnCommandExecuted?.Invoke(this, EventArgs.Empty);
 		}
-		public event EventHandler OnCommandExecuted;
+		public event EventHandler? OnCommandExecuted;
 
 		protected abstract ObjectFormatter ObjectFormatter { get; }
 		protected abstract DiagnosticFormatter DiagnosticFormatter { get; }
@@ -591,7 +591,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 					return new OutputWriter(owner, startOnNewLine);
 				return normalOutputWriter = new OutputWriter(owner, false);
 			}
-			static IOutputWriter normalOutputWriter;
+			static IOutputWriter? normalOutputWriter;
 
 			OutputWriter(ScriptControlVM owner, bool startOnNewLine) {
 				this.owner = owner;
@@ -609,7 +609,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 
 		void ObjectOutput(CachedWriter writer, object? color, PrintOptionsImpl printOptions, object? value) {
 			var writable = GetOutputWritable(printOptions, value);
-			if (!(writable is null))
+			if (writable is not null)
 				writable.WriteTo(writer);
 			else
 				writer.Write(Format(value, printOptions.RoslynPrintOptions), color);
@@ -619,7 +619,7 @@ namespace dnSpy.Scripting.Roslyn.Common {
 			if (color is null)
 				return;
 			var writable = GetOutputWritable(printOptions, value);
-			if (!(writable is null))
+			if (writable is not null)
 				writable.WriteTo(OutputWriter.Create(this, startOnNewLine));
 			else
 				ReplEditor.OutputPrint(Format(value, printOptions.RoslynPrintOptions), color, startOnNewLine);

@@ -60,8 +60,8 @@ namespace dnSpy.TreeView {
 		readonly IClassificationFormatMap classificationFormatMap;
 		readonly object foregroundBrushResourceKey;
 
-		public event EventHandler<TreeViewSelectionChangedEventArgs> SelectionChanged;
-		public event EventHandler<TreeViewNodeRemovedEventArgs> NodeRemoved;
+		public event EventHandler<TreeViewSelectionChangedEventArgs>? SelectionChanged;
+		public event EventHandler<TreeViewNodeRemovedEventArgs>? NodeRemoved;
 
 		public TreeViewImpl(ITreeViewServiceImpl treeViewService, IThemeService themeService, IClassificationFormatMapService classificationFormatMapService, Guid guid, TreeViewOptions options) {
 			Guid = guid;
@@ -113,9 +113,9 @@ namespace dnSpy.TreeView {
 
 		static TreeViewSelectionChangedEventArgs Convert(SelectionChangedEventArgs e) {
 			TreeNodeData[]? added = null, removed = null;
-			if (!(e.AddedItems is null))
+			if (e.AddedItems is not null)
 				added = Convert(e.AddedItems);
-			if (!(e.RemovedItems is null))
+			if (e.RemovedItems is not null)
 				removed = Convert(e.RemovedItems);
 			return new TreeViewSelectionChangedEventArgs(added, removed);
 		}
@@ -126,9 +126,9 @@ namespace dnSpy.TreeView {
 		ITreeNode ITreeView.Create(TreeNodeData data) => Create(data);
 
 		TreeNodeImpl Create(TreeNodeData data) {
-			Debug.Assert(data.TreeNode is null);
+			Debug2.Assert(data.TreeNode is null);
 			var impl = new TreeNodeImpl(this, data);
-			if (!(treeViewListener is null))
+			if (treeViewListener is not null)
 				treeViewListener.OnEvent(this, new TreeViewListenerEventArgs(TreeViewListenerEvent.NodeCreated, impl));
 			data.Initialize();
 			if (!impl.LazyLoading)
@@ -171,7 +171,7 @@ namespace dnSpy.TreeView {
 			if (children.Count >= 1) {
 				var lastData = children[children.Count - 1].Data;
 				var lastGroup = lastData.TreeNodeGroup;
-				if (!(lastGroup is null)) {
+				if (lastGroup is not null) {
 					int x = Compare(impl.Data, lastData, group, lastGroup);
 					if (x > 0)
 						return children.Count;
@@ -217,7 +217,7 @@ namespace dnSpy.TreeView {
 				sharpTreeView.SelectedItem = null;
 			else
 				sharpTreeView.SelectedItems.Clear();
-			var nodes = items.Where(a => !(a is null)).Select(a => (TreeNodeImpl)a.TreeNode).ToArray();
+			var nodes = items.Where(a => a is not null).Select(a => (TreeNodeImpl)a.TreeNode).ToArray();
 			if (nodes.Length > 0) {
 				sharpTreeView.FocusNode(nodes[0].Node);
 				sharpTreeView.SelectedItem = nodes[0].Node;
@@ -267,7 +267,7 @@ namespace dnSpy.TreeView {
 			if (node is null)
 				return null;
 			var impl = node.TreeNode as TreeNodeImpl;
-			Debug.Assert(!(impl is null));
+			Debug2.Assert(impl is not null);
 			return impl?.Node;
 		}
 
@@ -300,7 +300,7 @@ namespace dnSpy.TreeView {
 
 		internal Brush GetNodeForegroundBrush() {
 			var brush = sharpTreeView.TryFindResource(foregroundBrushResourceKey) as Brush;
-			Debug.Assert(!(brush is null));
+			Debug2.Assert(brush is not null);
 			return brush;
 		}
 	}

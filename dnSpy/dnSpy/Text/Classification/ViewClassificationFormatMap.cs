@@ -34,7 +34,7 @@ namespace dnSpy.Text.Classification {
 			set => categoryMap.DefaultTextProperties = value;
 		}
 
-		public event EventHandler<EventArgs> ClassificationFormatMappingChanged;
+		public event EventHandler<EventArgs>? ClassificationFormatMappingChanged;
 		readonly ClassificationFormatMapService classificationFormatMapService;
 		readonly string appearanceCategoryName;
 		IClassificationFormatMap categoryMap;
@@ -59,7 +59,7 @@ namespace dnSpy.Text.Classification {
 			if (categoryMap == newMap)
 				return;
 
-			if (!(categoryMap is null))
+			if (categoryMap is not null)
 				categoryMap.ClassificationFormatMappingChanged -= CategoryMap_ClassificationFormatMappingChanged;
 			categoryMap = newMap;
 			categoryMap.ClassificationFormatMappingChanged += CategoryMap_ClassificationFormatMappingChanged;
@@ -97,7 +97,7 @@ namespace dnSpy.Text.Classification {
 		public void EndBatchUpdate() => categoryMap.EndBatchUpdate();
 
 		public void Dispose() {
-			if (!(categoryMap is null))
+			if (categoryMap is not null)
 				categoryMap.ClassificationFormatMappingChanged -= CategoryMap_ClassificationFormatMappingChanged;
 			DisposeCore();
 		}

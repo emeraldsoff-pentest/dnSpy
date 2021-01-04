@@ -124,7 +124,7 @@
     <value>追加类型</value>
   </data>
   <data name="AssemblyDlg_Main_CB_DisableJITCompileOpt" xml:space="preserve">
-    <value>禁用 JIT 编译优化(_D)</value>
+    <value>禁用 JIT编译优化(_D)</value>
   </data>
   <data name="AssemblyDlg_Main_CB_EnableJITCompTrck" xml:space="preserve">
     <value>启用 JIT 编译跟踪(_J)</value>
@@ -368,7 +368,7 @@
     <value>编辑成员引用</value>
   </data>
   <data name="EditMethodOverride" xml:space="preserve">
-    <value>编辑方法重载</value>
+    <value>编辑方法重写</value>
   </data>
   <data name="EditMethodSpec" xml:space="preserve">
     <value>编辑方法声明</value>
@@ -548,7 +548,7 @@
     <value>_GUID</value>
   </data>
   <data name="MarshalType_NativeType" xml:space="preserve">
-    <value>本地类型(_N)</value>
+    <value>本机类型(_N)</value>
   </data>
   <data name="MarshalType_Nothing" xml:space="preserve">
     <value>无</value>
@@ -1403,7 +1403,7 @@
     <value>PE</value>
   </data>
   <data name="HexNode_PE_Section" xml:space="preserve">
-    <value>章节</value>
+    <value>节</value>
   </data>
   <data name="HexNode_StorageHeader" xml:space="preserve">
     <value>存储标题</value>
@@ -1553,7 +1553,7 @@
     <value>主体类型(_B)</value>
   </data>
   <data name="MethodOverridesTab" xml:space="preserve">
-    <value>重载</value>
+    <value>重写</value>
   </data>
   <data name="MethodParametersTab" xml:space="preserve">
     <value>参数</value>

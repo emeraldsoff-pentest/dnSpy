@@ -34,7 +34,7 @@ namespace dnSpy.BackgroundImage {
 		[Export(typeof(HexAdornmentLayerDefinition))]
 		[VSUTIL.Name(PredefinedHexAdornmentLayers.BackgroundImage)]
 		[HexLayerKind(HexLayerKind.Underlay)]
-		static HexAdornmentLayerDefinition backgroundImageAdornmentLayerDefinition;
+		static HexAdornmentLayerDefinition? backgroundImageAdornmentLayerDefinition;
 #pragma warning restore CS0169
 
 		HexViewBackgroundImageService(WpfHexView wpfHexView, IImageSourceService imageSourceService)
@@ -70,7 +70,7 @@ namespace dnSpy.BackgroundImage {
 
 		protected override void OnDisabledCore() {
 			wpfHexView.LayoutChanged -= WpfHexView_LayoutChanged;
-			if (!(adornmentLayer is null))
+			if (adornmentLayer is not null)
 				adornmentLayer.RemoveAllAdornments();
 		}
 

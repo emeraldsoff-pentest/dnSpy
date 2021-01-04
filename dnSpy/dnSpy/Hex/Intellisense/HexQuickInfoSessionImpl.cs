@@ -28,14 +28,14 @@ using VSUTIL = Microsoft.VisualStudio.Utilities;
 namespace dnSpy.Hex.Intellisense {
 	sealed class HexQuickInfoSessionImpl : HexQuickInfoSession {
 		public override VSLI.BulkObservableCollection<object> QuickInfoContent { get; }
-		public override event EventHandler ApplicableToSpanChanged;
+		public override event EventHandler? ApplicableToSpanChanged;
 		public override bool TrackMouse { get; }
 		public override HexView HexView { get; }
 		public override HexIntellisensePresenter? Presenter => quickInfoPresenter;
 		public override HexCellPosition TriggerPoint { get; }
-		public override event EventHandler PresenterChanged;
-		public override event EventHandler Recalculated;
-		public override event EventHandler Dismissed;
+		public override event EventHandler? PresenterChanged;
+		public override event EventHandler? Recalculated;
+		public override event EventHandler? Dismissed;
 		public override bool IsDismissed => isDismissed;
 		bool isDismissed;
 		public override bool HasInteractiveContent => hasInteractiveContent;
@@ -78,7 +78,7 @@ namespace dnSpy.Hex.Intellisense {
 			List<HexQuickInfoSource>? list = null;
 			foreach (var provider in quickInfoSourceProviders) {
 				var source = provider.Value.TryCreateQuickInfoSource(HexView);
-				if (!(source is null)) {
+				if (source is not null) {
 					if (list is null)
 						list = new List<HexQuickInfoSource>();
 					list.Add(source);
@@ -88,7 +88,7 @@ namespace dnSpy.Hex.Intellisense {
 		}
 
 		void DisposeQuickInfoSources() {
-			if (!(quickInfoSources is null)) {
+			if (quickInfoSources is not null) {
 				foreach (var source in quickInfoSources)
 					source.Dispose();
 				quickInfoSources = null;

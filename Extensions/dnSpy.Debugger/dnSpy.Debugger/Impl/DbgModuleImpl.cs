@@ -40,7 +40,7 @@ namespace dnSpy.Debugger.Impl {
 
 		public override int RefreshedVersion => refreshedVersion;
 		volatile int refreshedVersion;
-		public override event EventHandler Refreshed;
+		public override event EventHandler? Refreshed;
 		internal void RaiseRefreshed() {
 			Interlocked.Increment(ref refreshedVersion);
 			Refreshed?.Invoke(this, EventArgs.Empty);
@@ -104,7 +104,7 @@ namespace dnSpy.Debugger.Impl {
 			this.version = version;
 		}
 
-		public override event PropertyChangedEventHandler PropertyChanged;
+		public override event PropertyChangedEventHandler? PropertyChanged;
 		void OnPropertyChanged(string propName) {
 			Dispatcher.VerifyAccess();
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
@@ -147,7 +147,7 @@ namespace dnSpy.Debugger.Impl {
 
 		internal void UpdateName_DbgThread(string? name) {
 			Dispatcher.VerifyAccess();
-			if (this.name != name && !(name is null)) {
+			if (this.name != name && name is not null) {
 				this.name = name;
 				OnPropertyChanged(nameof(Name));
 			}
@@ -155,7 +155,7 @@ namespace dnSpy.Debugger.Impl {
 
 		internal void UpdateFilename_DbgThread(string? filename) {
 			Dispatcher.VerifyAccess();
-			if (this.filename != filename && !(filename is null)) {
+			if (this.filename != filename && filename is not null) {
 				this.filename = filename;
 				OnPropertyChanged(nameof(Filename));
 			}
@@ -210,7 +210,7 @@ namespace dnSpy.Debugger.Impl {
 
 		internal void UpdateVersion_DbgThread(string? version) {
 			Dispatcher.VerifyAccess();
-			if (this.version != version && !(version is null)) {
+			if (this.version != version && version is not null) {
 				this.version = version;
 				OnPropertyChanged(nameof(Version));
 			}

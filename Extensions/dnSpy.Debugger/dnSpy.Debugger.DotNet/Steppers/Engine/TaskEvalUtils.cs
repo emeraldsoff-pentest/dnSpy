@@ -56,14 +56,14 @@ namespace dnSpy.Debugger.DotNet.Steppers.Engine {
 				}
 
 				DmdFieldInfo? builderField = null;
-				if (!(builderFieldModule is null) && builderFieldToken != 0)
+				if (builderFieldModule is not null && builderFieldToken != 0)
 					builderField = thisArg.Value.Type.GetField(builderFieldModule, (int)builderFieldToken);
 				if (builderField is null)
 					builderField = TryGetBuilderField(thisArg.Value.Type);
 				if (builderField is null)
 					return null;
 				Debug.Assert((object)builderField == TryGetBuilderFieldByType(thisArg.Value.Type));
-				Debug.Assert(TryGetBuilderFieldByname(thisArg.Value.Type) is null ||
+				Debug2.Assert(TryGetBuilderFieldByname(thisArg.Value.Type) is null ||
 					(object?)TryGetBuilderFieldByname(thisArg.Value.Type) == TryGetBuilderFieldByType(thisArg.Value.Type));
 				tmpResult = runtime.LoadField(evalInfo, thisArg.Value, builderField);
 				if (!tmpResult.IsNormalResult || tmpResult.Value!.IsNull)
@@ -102,7 +102,7 @@ namespace dnSpy.Debugger.DotNet.Steppers.Engine {
 					if (fieldType.MetadataNamespace == info.@namespace && fieldType.MetadataName == info.name)
 						return field;
 				}
-				if (builderField is null && !(fieldType.MetadataName is null) &&
+				if (builderField is null && fieldType.MetadataName is not null &&
 					(fieldType.MetadataName.EndsWith("MethodBuilder", StringComparison.Ordinal) ||
 					fieldType.MetadataName.EndsWith("MethodBuilder`1", StringComparison.Ordinal))) {
 					builderField = field;
@@ -130,7 +130,7 @@ namespace dnSpy.Debugger.DotNet.Steppers.Engine {
 				TryGetTaskObjectId_FrameworkBuilder(evalInfo, builderValue) ??
 				TryGetTaskObjectId_ObjectIdForDebugger(evalInfo, builderValue) ??
 				TryGetTaskObjectId_TaskProperty(evalInfo, builderValue);
-			Debug.Assert(result is null || !result.IsNull);
+			Debug2.Assert(result is null || !result.IsNull);
 			return result;
 		}
 
@@ -144,14 +144,14 @@ namespace dnSpy.Debugger.DotNet.Steppers.Engine {
 				var currInst = builderValue;
 
 				field = currInst.Type.GetField(KnownMemberNames.AsyncTaskMethodBuilder_Builder_FieldName, DmdBindingFlags.Instance | DmdBindingFlags.Public | DmdBindingFlags.NonPublic);
-				if (!(field is null)) {
+				if (field is not null) {
 					fieldResult1 = runtime.LoadField(evalInfo, currInst, field);
 					if (fieldResult1.IsNormalResult)
 						currInst = fieldResult1.Value!;
 				}
 
 				field = currInst.Type.GetField(KnownMemberNames.Builder_Task_FieldName, DmdBindingFlags.Instance | DmdBindingFlags.Public | DmdBindingFlags.NonPublic);
-				if (!(field is null)) {
+				if (field is not null) {
 					fieldResult2 = runtime.LoadField(evalInfo, currInst, field);
 					if (fieldResult2.IsNormalResult && !fieldResult2.Value!.IsNull)
 						return resultValue = fieldResult2.Value;
@@ -175,7 +175,7 @@ namespace dnSpy.Debugger.DotNet.Steppers.Engine {
 
 				var prop = builderValue.Type.GetProperty(KnownMemberNames.Builder_ObjectIdForDebugger_PropertyName, DmdBindingFlags.Instance | DmdBindingFlags.Public | DmdBindingFlags.NonPublic);
 				var getMethod = prop?.GetGetMethod(DmdGetAccessorOptions.All);
-				if (!(getMethod is null) && getMethod.GetMethodSignature().GetParameterTypes().Count == 0) {
+				if (getMethod is not null && getMethod.GetMethodSignature().GetParameterTypes().Count == 0) {
 					getObjectIdTaskResult = runtime.Call(evalInfo, builderValue, getMethod, Array.Empty<object>(), DbgDotNetInvokeOptions.None);
 					if (getObjectIdTaskResult.IsNormalResult && !getObjectIdTaskResult.Value!.IsNull)
 						return resultValue = getObjectIdTaskResult.Value;
@@ -210,11 +210,11 @@ namespace dnSpy.Debugger.DotNet.Steppers.Engine {
 				var field = getTaskResult.Value.Type.GetField(KnownMemberNames.ValueTask_Task_FieldName, DmdBindingFlags.Instance | DmdBindingFlags.Public | DmdBindingFlags.NonPublic);
 				if (field is null)
 					field = getTaskResult.Value.Type.GetField(KnownMemberNames.ValueTask_Obj_FieldName, DmdBindingFlags.Instance | DmdBindingFlags.Public | DmdBindingFlags.NonPublic);
-				if (!(field is null)) {
+				if (field is not null) {
 					taskFieldResult = runtime.LoadField(evalInfo, getTaskResult.Value, field);
 					if (taskFieldResult.IsNormalResult && !taskFieldResult.Value!.IsNull) {
 						var taskType = taskFieldResult.Value.Type.AppDomain.GetWellKnownType(DmdWellKnownType.System_Threading_Tasks_Task, isOptional: true);
-						if (!(taskType is null) && taskFieldResult.Value.Type.IsSubclassOf(taskType))
+						if (taskType is not null && taskFieldResult.Value.Type.IsSubclassOf(taskType))
 							return resultValue = taskFieldResult.Value;
 					}
 				}
@@ -249,7 +249,7 @@ namespace dnSpy.Debugger.DotNet.Steppers.Engine {
 		}
 
 		public static bool SupportsAsyncStepOut(DmdAppDomain? appDomain) =>
-			!(GetNotifyDebuggerOfWaitCompletionMethod(appDomain) is null);
+			GetNotifyDebuggerOfWaitCompletionMethod(appDomain) is not null;
 
 		public static DmdMethodInfo? GetNotifyDebuggerOfWaitCompletionMethod(DmdAppDomain? appDomain) =>
 			appDomain is null ? null : GetAsyncStepOutState(appDomain).NotifyDebuggerOfWaitCompletionMethod;
@@ -266,7 +266,7 @@ namespace dnSpy.Debugger.DotNet.Steppers.Engine {
 					return (false, null);
 				bool calledMethod = TryCallSetNotificationForWaitCompletion(evalInfo, builderValue, value);
 				taskValue = TryGetTaskValue(evalInfo, builderValue);
-				if (!calledMethod && !(taskValue is null))
+				if (!calledMethod && taskValue is not null)
 					calledMethod = TryCallSetNotificationForWaitCompletion(evalInfo, taskValue, value);
 				if (!calledMethod)
 					return (false, null);
@@ -296,7 +296,7 @@ namespace dnSpy.Debugger.DotNet.Steppers.Engine {
 
 		static DbgDotNetValue? TryGetTaskValue(DbgEvaluationInfo evalInfo, DbgDotNetValue value) {
 			var result = TryGetTaskObjectId_TaskProperty(evalInfo, value);
-			Debug.Assert(result is null || !result.IsNull);
+			Debug2.Assert(result is null || !result.IsNull);
 			return result;
 		}
 	}

@@ -27,7 +27,7 @@ using dnSpy.Hex.MEF;
 namespace dnSpy.Hex.Editor {
 	abstract class WpfHexViewMarginProviderCollection {
 		public abstract WpfHexViewMarginInfo[] Margins { get; }
-		public abstract event EventHandler MarginsChanged;
+		public abstract event EventHandler? MarginsChanged;
 		public abstract void Dispose();
 	}
 
@@ -50,7 +50,7 @@ namespace dnSpy.Hex.Editor {
 		WpfHexViewMarginInfo[] currentMargins;
 
 		public override WpfHexViewMarginInfo[] Margins => currentMargins;
-		public override event EventHandler MarginsChanged;
+		public override event EventHandler? MarginsChanged;
 
 		public WpfHexViewMarginProviderCollectionImpl(Lazy<WpfHexViewMarginProvider, IWpfHexViewMarginMetadata>[] wpfHexViewMarginProviders, WpfHexViewHost wpfHexViewHost, WpfHexViewMargin marginContainer, string marginContainerName) {
 			if (wpfHexViewMarginProviders is null)
@@ -86,7 +86,7 @@ namespace dnSpy.Hex.Editor {
 				}
 				else {
 					var margin = lazy.Value.CreateMargin(wpfHexViewHost, marginContainer);
-					if (!(margin is null))
+					if (margin is not null)
 						newInfos.Add(new WpfHexViewMarginInfo(lazy.Value, lazy.Metadata, margin));
 				}
 			}

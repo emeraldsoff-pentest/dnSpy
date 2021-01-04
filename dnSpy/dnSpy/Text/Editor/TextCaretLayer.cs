@@ -220,7 +220,7 @@ namespace dnSpy.Text.Editor {
 		}
 
 		void StartTimer() {
-			if (!(dispatcherTimer is null))
+			if (dispatcherTimer is not null)
 				throw new InvalidOperationException();
 			// Make sure the caret doesn't blink when it's moved
 			layer.Opacity = 1;
@@ -234,7 +234,7 @@ namespace dnSpy.Text.Editor {
 
 		protected override void OnRender(DrawingContext drawingContext) {
 			base.OnRender(drawingContext);
-			Debug.Assert((overwriteCaretBrush is null) == (caretBrush is null));
+			Debug2.Assert((overwriteCaretBrush is null) == (caretBrush is null));
 			if (caretBrush is null) {
 				caretBrush = classificationFormatMap.DefaultTextProperties.ForegroundBrush;
 				Debug.Assert(!classificationFormatMap.DefaultTextProperties.ForegroundBrushEmpty);

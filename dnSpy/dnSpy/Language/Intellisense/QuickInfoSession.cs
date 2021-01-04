@@ -30,13 +30,13 @@ namespace dnSpy.Language.Intellisense {
 	sealed class QuickInfoSession : IQuickInfoSession2 {
 		public PropertyCollection Properties { get; }
 		public BulkObservableCollection<object> QuickInfoContent { get; }
-		public event EventHandler ApplicableToSpanChanged;
+		public event EventHandler? ApplicableToSpanChanged;
 		public bool TrackMouse { get; }
 		public ITextView TextView { get; }
 		public IIntellisensePresenter? Presenter => quickInfoPresenter;
-		public event EventHandler PresenterChanged;
-		public event EventHandler Recalculated;
-		public event EventHandler Dismissed;
+		public event EventHandler? PresenterChanged;
+		public event EventHandler? Recalculated;
+		public event EventHandler? Dismissed;
 		public bool IsDismissed { get; private set; }
 		public bool HasInteractiveContent { get; private set; }
 		bool IsStarted { get; set; }
@@ -81,7 +81,7 @@ namespace dnSpy.Language.Intellisense {
 				if (!TextView.TextDataModel.ContentType.IsOfAnyType(provider.Metadata.ContentTypes))
 					continue;
 				var source = provider.Value.TryCreateQuickInfoSource(textBuffer);
-				if (!(source is null)) {
+				if (source is not null) {
 					if (list is null)
 						list = new List<IQuickInfoSource>();
 					list.Add(source);
@@ -91,7 +91,7 @@ namespace dnSpy.Language.Intellisense {
 		}
 
 		void DisposeQuickInfoSources() {
-			if (!(quickInfoSources is null)) {
+			if (quickInfoSources is not null) {
 				foreach (var source in quickInfoSources)
 					source.Dispose();
 				quickInfoSources = null;

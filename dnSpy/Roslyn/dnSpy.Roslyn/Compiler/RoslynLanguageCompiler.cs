@@ -123,7 +123,7 @@ namespace dnSpy.Roslyn.Compiler {
 		public abstract IEnumerable<string> GetRequiredAssemblyReferences(ModuleDef editedModule);
 
 		public void InitializeProject(CompilerProjectInfo projectInfo) {
-			Debug.Assert(workspace is null);
+			Debug2.Assert(workspace is null);
 
 			workspace = new AdhocWorkspace(RoslynMefHostServices.DefaultServices);
 			workspace.WorkspaceChanged += Workspace_WorkspaceChanged;
@@ -132,7 +132,7 @@ namespace dnSpy.Roslyn.Compiler {
 			var compilationOptions = CreateCompilationOptions(GetDefaultOutputKind(kind))
 				.WithPlatform(GetPlatform(projectInfo.Platform))
 				.WithAssemblyIdentityComparer(DesktopAssemblyIdentityComparer.Default);
-			if (!(projectInfo.PublicKey is null)) {
+			if (projectInfo.PublicKey is not null) {
 				compilationOptions = compilationOptions
 					.WithCryptoPublicKey(ImmutableArray.Create<byte>(projectInfo.PublicKey))
 					.WithDelaySign(true);
@@ -205,7 +205,7 @@ namespace dnSpy.Roslyn.Compiler {
 		}
 
 		public ICodeDocument[] AddDocuments(CompilerDocumentInfo[] documents) {
-			Debug.Assert(!(workspace is null));
+			Debug2.Assert(workspace is not null);
 			var newDocuments = new List<RoslynCodeDocument>();
 
 			foreach (var doc in documents)
@@ -227,7 +227,7 @@ namespace dnSpy.Roslyn.Compiler {
 		}
 
 		public async Task<CompilationResult> CompileAsync(CancellationToken cancellationToken) {
-			Debug.Assert(!(workspace is null));
+			Debug2.Assert(workspace is not null);
 			var project = workspace.CurrentSolution.Projects.First();
 			Debug.Assert(project.SupportsCompilation);
 			var compilation = await project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
@@ -268,7 +268,7 @@ namespace dnSpy.Roslyn.Compiler {
 		protected abstract string GetHelpUri(Diagnostic diagnostic);
 
 		public bool AddMetadataReferences(CompilerMetadataReference[] metadataReferences) {
-			Debug.Assert(!(workspace is null));
+			Debug2.Assert(workspace is not null);
 			if (workspace is null)
 				throw new InvalidOperationException();
 			var newProj = workspace.CurrentSolution.Projects.First().AddMetadataReferences(metadataReferences.Select(a => a.CreateMetadataReference(docFactory)));
@@ -279,7 +279,7 @@ namespace dnSpy.Roslyn.Compiler {
 			if (isDisposed)
 				return;
 			isDisposed = true;
-			if (!(workspace is null)) {
+			if (workspace is not null) {
 				workspace.WorkspaceChanged -= Workspace_WorkspaceChanged;
 				// This also closes all documents
 				workspace.Dispose();

@@ -25,11 +25,11 @@ using dnSpy.Contracts.Debugger.Engine;
 
 namespace dnSpy.Debugger.Impl {
 	sealed partial class DbgManagerImpl {
-		public override event EventHandler<DbgCurrentObjectChangedEventArgs<DbgProcess>> CurrentProcessChanged;
+		public override event EventHandler<DbgCurrentObjectChangedEventArgs<DbgProcess>>? CurrentProcessChanged;
 		public override DbgCurrentObject<DbgProcess> CurrentProcess => dbgCurrentProcess;
-		public override event EventHandler<DbgCurrentObjectChangedEventArgs<DbgRuntime>> CurrentRuntimeChanged;
+		public override event EventHandler<DbgCurrentObjectChangedEventArgs<DbgRuntime>>? CurrentRuntimeChanged;
 		public override DbgCurrentObject<DbgRuntime> CurrentRuntime => dbgCurrentRuntime;
-		public override event EventHandler<DbgCurrentObjectChangedEventArgs<DbgThread>> CurrentThreadChanged;
+		public override event EventHandler<DbgCurrentObjectChangedEventArgs<DbgThread>>? CurrentThreadChanged;
 		public override DbgCurrentObject<DbgThread> CurrentThread => dbgCurrentThread;
 
 		readonly DbgCurrentProcess dbgCurrentProcess;
@@ -201,7 +201,7 @@ namespace dnSpy.Debugger.Impl {
 			DbgCurrentObjectChangedEventArgs<DbgRuntime> runtimeEventArgs;
 			DbgCurrentObjectChangedEventArgs<DbgThread> threadEventArgs;
 			lock (lockObj) {
-				if (!forceSet && !(dbgCurrentProcess.currentProcess.Current is null))
+				if (!forceSet && dbgCurrentProcess.currentProcess.Current is not null)
 					return false;
 				var info = GetEngineInfo_NoLock(engine);
 				var process = info.Process;
@@ -242,7 +242,7 @@ namespace dnSpy.Debugger.Impl {
 			RaiseCurrentObjectEvents_DbgThread(processEventArgs, runtimeEventArgs, threadEventArgs);
 		}
 
-		DbgProcessImpl GetProcess_NoLock(DbgProcessImpl? current, DbgProcessImpl @default) {
+		DbgProcessImpl? GetProcess_NoLock(DbgProcessImpl? current, DbgProcessImpl? @default) {
 			if (current is null)
 				return @default;
 			switch (current.State) {

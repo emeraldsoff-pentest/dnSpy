@@ -43,7 +43,7 @@ namespace dnSpy.Decompiler.ILSpy.Core.VisualBasic {
 		}
 
 		public DecompilerProvider(DecompilerSettingsService decompilerSettingsService) {
-			Debug.Assert(!(decompilerSettingsService is null));
+			Debug2.Assert(decompilerSettingsService is not null);
 			this.decompilerSettingsService = decompilerSettingsService ?? throw new ArgumentNullException(nameof(decompilerSettingsService));
 		}
 
@@ -187,18 +187,24 @@ namespace dnSpy.Decompiler.ILSpy.Core.VisualBasic {
 
 		public override bool ShowMember(IMemberRef member) => CSharpDecompiler.ShowMember(member, showAllMembers, GetDecompilerSettings());
 
+		VBFormattingOptions CreateVBFormattingOptions(DecompilerSettings settings) =>
+			new VBFormattingOptions() {
+				NumberFormatter = ICSharpCode.NRefactory.NumberFormatter.GetVBInstance(hex: settings.HexadecimalNumbers, upper: true),
+			};
+
 		void RunTransformsAndGenerateCode(ref BuilderState state, IDecompilerOutput output, DecompilationContext ctx, IAstTransform? additionalTransform = null) {
 			var astBuilder = state.AstBuilder;
 			astBuilder.RunTransformations(transformAbortCondition);
-			if (!(additionalTransform is null)) {
+			if (additionalTransform is not null) {
 				additionalTransform.Run(astBuilder.SyntaxTree);
 			}
-			CSharpDecompiler.AddXmlDocumentation(ref state, GetDecompilerSettings(), astBuilder);
+			var settings = GetDecompilerSettings();
+			CSharpDecompiler.AddXmlDocumentation(ref state, settings, astBuilder);
 			var csharpUnit = astBuilder.SyntaxTree;
 			csharpUnit.AcceptVisitor(new ICSharpCode.NRefactory.CSharp.InsertParenthesesVisitor() { InsertParenthesesForReadability = true });
 			var unit = csharpUnit.AcceptVisitor(new CSharpToVBConverterVisitor(state.AstBuilder.Context.CurrentModule, new ILSpyEnvironmentProvider(state.State.XmlDoc_StringBuilder)), null);
 			var outputFormatter = new VBTextOutputFormatter(output, astBuilder.Context);
-			var formattingPolicy = new VBFormattingOptions();
+			var formattingPolicy = CreateVBFormattingOptions(settings);
 			unit.AcceptVisitor(new OutputVisitor(outputFormatter, formattingPolicy), null);
 		}
 
@@ -243,7 +249,7 @@ namespace dnSpy.Decompiler.ILSpy.Core.VisualBasic {
 			var converter = new CSharpToVBConverterVisitor(type.Module, envProvider);
 			var astType = AstBuilder.ConvertType(type, new StringBuilder(), typeAttributes, options);
 
-			if (!(type.TryGetByRefSig() is null)) {
+			if (type.TryGetByRefSig() is not null) {
 				output.Write("ByRef", BoxedTextColor.Keyword);
 				output.Write(" ", BoxedTextColor.Text);
 				if (astType is ICSharpCode.NRefactory.CSharp.ComposedType && ((ICSharpCode.NRefactory.CSharp.ComposedType)astType).PointerRank > 0)
@@ -251,8 +257,9 @@ namespace dnSpy.Decompiler.ILSpy.Core.VisualBasic {
 			}
 
 			var vbAstType = astType.AcceptVisitor(converter, null);
-			var ctx = new DecompilerContext(GetDecompilerSettings().SettingsVersion, type.Module, MetadataTextColorProvider);
-			vbAstType.AcceptVisitor(new OutputVisitor(new VBTextOutputFormatter(output, ctx), new VBFormattingOptions()), null);
+			var settings = GetDecompilerSettings();
+			var ctx = new DecompilerContext(settings.SettingsVersion, type.Module, MetadataTextColorProvider);
+			vbAstType.AcceptVisitor(new OutputVisitor(new VBTextOutputFormatter(output, ctx), CreateVBFormattingOptions(settings)), null);
 		}
 
 		public override bool CanDecompile(DecompilationType decompilationType) {

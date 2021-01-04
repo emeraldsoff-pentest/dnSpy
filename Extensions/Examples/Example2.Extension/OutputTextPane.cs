@@ -22,12 +22,12 @@ namespace Example2.Extension {
 				return _instance;
 			}
 			set {
-				if (!(_instance is null))
+				if (_instance is not null)
 					throw new InvalidOperationException("Can't initialize the logger twice");
 				_instance = value ?? throw new ArgumentNullException(nameof(value));
 			}
 		}
-		static IOutputTextPane _instance;
+		static IOutputTextPane? _instance;
 
 		// This class initializes the Logger property. It gets auto loaded by dnSpy
 		[ExportAutoLoaded(Order = double.MinValue)]

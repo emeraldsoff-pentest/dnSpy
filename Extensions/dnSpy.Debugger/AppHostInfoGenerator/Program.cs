@@ -33,10 +33,15 @@ using Newtonsoft.Json.Linq;
 
 namespace AppHostInfoGenerator {
 	sealed class Program : IDisposable {
+		// *** .NET Core 3.0 apphosts now have a signature (SHA256(".net core bundle")) so this table doesn't need to be updated anymore.
 		// Add new versions from: https://www.nuget.org/packages/Microsoft.NETCore.DotNetAppHost/
 		// The code ignores known versions so all versions can be added.
 		//	^(\S+)\s.*		=>		\t\t\t"\1",
 		static readonly string[] DotNetAppHost_Versions_ToCheck = new string[] {
+			"3.0.0",
+			"3.0.0-rc1-19456-20",
+			"3.0.0-preview9-19423-09",
+			"3.0.0-preview8-28405-07",
 			"3.0.0-preview7-27912-14",
 			"3.0.0-preview6-27804-01",
 			"3.0.0-preview5-27626-15",
@@ -44,6 +49,7 @@ namespace AppHostInfoGenerator {
 			"3.0.0-preview3-27503-5",
 			"3.0.0-preview-27324-5",
 			"3.0.0-preview-27122-01",
+			"2.2.7",
 			"2.2.6",
 			"2.2.5",
 			"2.2.4",
@@ -54,6 +60,7 @@ namespace AppHostInfoGenerator {
 			"2.2.0-preview3-27014-02",
 			"2.2.0-preview2-26905-02",
 			"2.2.0-preview-26820-02",
+			"2.1.13",
 			"2.1.12",
 			"2.1.11",
 			"2.1.10",
@@ -164,22 +171,20 @@ namespace AppHostInfoGenerator {
 					var fileData = DownloadNuGetPackage("Microsoft.NETCore.DotNetAppHost", version, NuGetSource.NuGet);
 					using (var zip = new ZipArchive(new MemoryStream(fileData), ZipArchiveMode.Read, leaveOpen: false)) {
 						var runtimeJsonString = GetFileAsString(zip, "runtime.json");
-						var runtimeJson = (JObject)JsonConvert.DeserializeObject(runtimeJsonString);
-						foreach (JProperty runtime in runtimeJson["runtimes"]) {
+						var runtimeJson = (JObject)JsonConvert.DeserializeObject(runtimeJsonString)!;
+						foreach (JProperty runtime in runtimeJson["runtimes"]!) {
 							var runtimeName = runtime.Name;
 							if (runtime.Count != 1)
 								throw new InvalidOperationException("Expected 1 child");
-							var dotNetAppHostObject = (JObject)runtime.First;
-							if (dotNetAppHostObject.Count != 1)
-								throw new InvalidOperationException("Expected 1 child");
-							var dotNetAppHostObject2 = (JObject)dotNetAppHostObject["Microsoft.NETCore.DotNetAppHost"];
+							var dotNetAppHostObject = (JObject)runtime.First!;
+							var dotNetAppHostObject2 = (JObject)dotNetAppHostObject["Microsoft.NETCore.DotNetAppHost"]!;
 							if (dotNetAppHostObject2.Count != 1)
 								throw new InvalidOperationException("Expected 1 child");
-							var dotNetAppHostProperty = (JProperty)dotNetAppHostObject2.First;
+							var dotNetAppHostProperty = (JProperty)dotNetAppHostObject2.First!;
 							if (dotNetAppHostProperty.Count != 1)
 								throw new InvalidOperationException("Expected 1 child");
 							var runtimePackageName = dotNetAppHostProperty.Name;
-							var runtimePackageVersion = (string)((JValue)dotNetAppHostProperty.Value).Value;
+							var runtimePackageVersion = GetNuGetVersion((string)((JValue)dotNetAppHostProperty.Value).Value!);
 							Console.WriteLine();
 							Console.WriteLine($"{runtimePackageName} {runtimePackageVersion}");
 							NuGetSource[] nugetSources;
@@ -201,7 +206,9 @@ namespace AppHostInfoGenerator {
 								Console.WriteLine(error);
 								continue;
 							}
-							Debug.Assert(!(ridData is null));
+							Debug.Assert(ridData is not null);
+							if (ridData is null)
+								throw new InvalidOperationException();
 							using (var ridZip = new ZipArchive(new MemoryStream(ridData), ZipArchiveMode.Read, leaveOpen: false)) {
 								var appHostEntries = GetAppHostEntries(ridZip).ToArray();
 								if (appHostEntries.Length == 0)
@@ -347,17 +354,29 @@ namespace AppHostInfoGenerator {
 			}
 		}
 
+		static string GetNuGetVersion(string version) {
+			if (version.StartsWith("[")) {
+				var parts = version.Substring(1).Split(',');
+				if (parts.Length != 2)
+					throw new InvalidOperationException();
+				if (!parts[1].EndsWith(" )"))
+					throw new InvalidOperationException();
+				return parts[0];
+			}
+			return version;
+		}
+
 		sealed class AppHostInfoDupeEqualityComparer : IEqualityComparer<AppHostInfo> {
 			public static readonly AppHostInfoDupeEqualityComparer Instance = new AppHostInfoDupeEqualityComparer();
 			AppHostInfoDupeEqualityComparer() { }
 
-			public bool Equals(AppHostInfo x, AppHostInfo y) =>
+			public bool Equals([AllowNull] AppHostInfo x, [AllowNull] AppHostInfo y) =>
 				x.RelPathOffset == y.RelPathOffset &&
 				x.HashDataOffset == y.HashDataOffset &&
 				x.HashDataSize == y.HashDataSize &&
 				AppHostInfoEqualityComparer.ByteArrayEquals(x.Hash, y.Hash);
 
-			public int GetHashCode(AppHostInfo obj) =>
+			public int GetHashCode([DisallowNull] AppHostInfo obj) =>
 				(int)(obj.RelPathOffset ^ obj.HashDataOffset ^ obj.HashDataSize) ^ AppHostInfoEqualityComparer.ByteArrayGetHashCode(obj.Hash);
 		}
 
@@ -365,12 +384,12 @@ namespace AppHostInfoGenerator {
 			public static readonly AppHostInfoEqualityComparer Instance = new AppHostInfoEqualityComparer();
 			AppHostInfoEqualityComparer() { }
 
-			public bool Equals(AppHostInfo x, AppHostInfo y) =>
+			public bool Equals([AllowNull] AppHostInfo x, [AllowNull] AppHostInfo y) =>
 				x.HashDataOffset == y.HashDataOffset &&
 				x.HashDataSize == y.HashDataSize &&
 				ByteArrayEquals(x.Hash, y.Hash);
 
-			public int GetHashCode(AppHostInfo obj) =>
+			public int GetHashCode([DisallowNull] AppHostInfo obj) =>
 				(int)(obj.HashDataOffset ^ obj.HashDataSize) ^ ByteArrayGetHashCode(obj.Hash);
 
 			internal static bool ByteArrayEquals(byte[] a, byte[] b) {
@@ -411,7 +430,7 @@ namespace AppHostInfoGenerator {
 
 		void WriteComment(string? name, string? origValue) {
 			if (name is null) {
-				if (!(origValue is null))
+				if (origValue is not null)
 					output.Write($"// {origValue}");
 			}
 			else if (origValue is null)

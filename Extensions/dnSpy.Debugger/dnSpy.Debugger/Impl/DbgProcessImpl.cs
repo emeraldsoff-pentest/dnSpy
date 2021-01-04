@@ -46,8 +46,8 @@ namespace dnSpy.Debugger.Impl {
 		public override DbgProcessState State => state;
 		DbgProcessState state;
 
-		public override event EventHandler IsRunningChanged;
-		public override event EventHandler DelayedIsRunningChanged;
+		public override event EventHandler? IsRunningChanged;
+		public override event EventHandler? DelayedIsRunningChanged;
 		public override bool IsRunning {
 			get {
 				lock (lockObj)
@@ -104,7 +104,7 @@ namespace dnSpy.Debugger.Impl {
 		}
 		readonly List<EngineInfo> engineInfos;
 
-		public override event EventHandler<DbgCollectionChangedEventArgs<DbgRuntime>> RuntimesChanged;
+		public override event EventHandler<DbgCollectionChangedEventArgs<DbgRuntime>>? RuntimesChanged;
 		public override DbgRuntime[] Runtimes {
 			get {
 				lock (lockObj) {
@@ -118,7 +118,7 @@ namespace dnSpy.Debugger.Impl {
 			}
 		}
 
-		public override event EventHandler<DbgCollectionChangedEventArgs<DbgThread>> ThreadsChanged;
+		public override event EventHandler<DbgCollectionChangedEventArgs<DbgThread>>? ThreadsChanged;
 		public override DbgThread[] Threads {
 			get {
 				lock (lockObj)
@@ -178,7 +178,7 @@ namespace dnSpy.Debugger.Impl {
 		}
 
 		DbgRuntimeImpl? GetRuntime_NoLock(DbgRuntimeImpl? runtime, DbgRuntimeImpl? defaultRuntime) {
-			if (!(runtime is null)) {
+			if (runtime is not null) {
 				var info = engineInfos.First(a => a.Runtime == runtime);
 				if (info.IsPaused || owner.GetDelayedIsRunning_DbgThread(info.Engine) == false)
 					return runtime;
@@ -233,9 +233,9 @@ namespace dnSpy.Debugger.Impl {
 		}
 
 		bool IIsRunningProvider.IsDebugging => State != DbgProcessState.Terminated;
-		public event EventHandler IsDebuggingChanged;
+		public event EventHandler? IsDebuggingChanged;
 
-		public override event PropertyChangedEventHandler PropertyChanged;
+		public override event PropertyChangedEventHandler? PropertyChanged;
 		void OnPropertyChanged(string propName) {
 			DbgManager.Dispatcher.VerifyAccess();
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
@@ -248,7 +248,7 @@ namespace dnSpy.Debugger.Impl {
 				using (var p = Process.GetProcessById(pid)) {
 					name = p.ProcessName;
 					// Could throw
-					filename = p.MainModule.FileName;
+					filename = p.MainModule?.FileName;
 					name = Path.GetFileName(filename);
 				}
 			}
@@ -499,7 +499,7 @@ namespace dnSpy.Debugger.Impl {
 				ThreadsChanged?.Invoke(this, new DbgCollectionChangedEventArgs<DbgThread>(removedThreads, added: false));
 			if (raiseDebuggingChanged)
 				OnPropertyChanged(nameof(Debugging));
-			if (!(runtime is null))
+			if (runtime is not null)
 				RuntimesChanged?.Invoke(this, new DbgCollectionChangedEventArgs<DbgRuntime>(runtime, added: false));
 		}
 

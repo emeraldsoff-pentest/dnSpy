@@ -54,7 +54,7 @@ namespace dnSpy.Text.Classification {
 				rawClassificationTypes = new Dictionary<string, RawClassificationType>();
 				foreach (var md in classificationTypeDefinitions.Select(a => a.Metadata)) {
 					var type = md.Name;
-					Debug.Assert(!(type is null));
+					Debug2.Assert(type is not null);
 					if (type is null)
 						continue;
 					Debug.Assert(!rawClassificationTypes.ContainsKey(type));
@@ -76,7 +76,7 @@ namespace dnSpy.Text.Classification {
 
 			IClassificationType? TryCreate(string type, int recurse) {
 				var ct = TryGet(type);
-				if (!(ct is null))
+				if (ct is not null)
 					return ct;
 
 				const int MAX_RECURSE = 1000;
@@ -88,7 +88,7 @@ namespace dnSpy.Text.Classification {
 				Debug.Assert(b);
 				if (!b)
 					return null;
-				Debug.Assert(!(rawCt is null));
+				Debug2.Assert(rawCt is not null);
 				b = rawClassificationTypes.Remove(rawCt.Type);
 				Debug.Assert(b);
 
@@ -117,7 +117,7 @@ namespace dnSpy.Text.Classification {
 		const string TRANSIENT_NAME = "(TRANSIENT)";
 #pragma warning disable CS0169
 		[Export, Name(TRANSIENT_NAME)]
-		static ClassificationTypeDefinition _transientClassificationTypeDefinition;
+		static ClassificationTypeDefinition? _transientClassificationTypeDefinition;
 #pragma warning restore CS0169
 
 		public IClassificationType CreateClassificationType(string type, IEnumerable<IClassificationType> baseTypes) {

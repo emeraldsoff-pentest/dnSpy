@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using dnSpy.Contracts.Debugger;
@@ -31,7 +32,7 @@ using dnSpy.Debugger.Evaluation.ViewModel;
 
 namespace dnSpy.Debugger.ToolWindows.Locals {
 	sealed class LocalsVariablesWindowValueNodesProvider : VariablesWindowValueNodesProvider {
-		public override event EventHandler NodesChanged;
+		public override event EventHandler? NodesChanged;
 		readonly DbgObjectIdService dbgObjectIdService;
 		readonly DebuggerSettings debuggerSettings;
 		bool forceRecreateAllNodes;
@@ -72,7 +73,7 @@ namespace dnSpy.Debugger.ToolWindows.Locals {
 		sealed class DbgObjectIdComparer : IComparer<DbgObjectId> {
 			public static readonly DbgObjectIdComparer Instance = new DbgObjectIdComparer();
 			DbgObjectIdComparer() { }
-			public int Compare(DbgObjectId x, DbgObjectId y) {
+			public int Compare([AllowNull] DbgObjectId x, [AllowNull] DbgObjectId y) {
 				if (x == y)
 					return 0;
 				if (x is null)

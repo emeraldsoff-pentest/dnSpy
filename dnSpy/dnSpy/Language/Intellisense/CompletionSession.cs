@@ -33,14 +33,14 @@ namespace dnSpy.Language.Intellisense {
 		public PropertyCollection Properties { get; }
 		public ITextView TextView { get; }
 		public ReadOnlyObservableCollection<CompletionSet> CompletionSets { get; }
-		public event EventHandler<ValueChangedEventArgs<CompletionSet?>> SelectedCompletionSetChanged;
+		public event EventHandler<ValueChangedEventArgs<CompletionSet?>>? SelectedCompletionSetChanged;
 		public bool IsDismissed { get; private set; }
-		public event EventHandler Dismissed;
+		public event EventHandler? Dismissed;
 		public bool IsStarted { get; private set; }
 		public IIntellisensePresenter? Presenter => completionPresenter;
-		public event EventHandler PresenterChanged;
-		public event EventHandler Recalculated;
-		public event EventHandler Committed;
+		public event EventHandler? PresenterChanged;
+		public event EventHandler? Recalculated;
+		public event EventHandler? Committed;
 
 		public CompletionSet? SelectedCompletionSet {
 			get => selectedCompletionSet;
@@ -92,7 +92,7 @@ namespace dnSpy.Language.Intellisense {
 				if (!TextView.TextDataModel.ContentType.IsOfAnyType(provider.Metadata.ContentTypes))
 					continue;
 				var source = provider.Value.TryCreateCompletionSource(textBuffer);
-				if (!(source is null))
+				if (source is not null)
 					list.Add(source);
 			}
 			return list.ToArray();
@@ -160,7 +160,7 @@ namespace dnSpy.Language.Intellisense {
 					customCommit.Commit();
 				else {
 					var insertionText = completion.InsertionText;
-					if (!(insertionText is null)) {
+					if (insertionText is not null) {
 						var replaceSpan = completionSet.ApplicableTo;
 						var buffer = replaceSpan.TextBuffer;
 						var span = replaceSpan.GetSpan(buffer.CurrentSnapshot);
@@ -180,7 +180,7 @@ namespace dnSpy.Language.Intellisense {
 			completionSessionCommandTargetFilter?.Close();
 			completionSessionCommandTargetFilter = null;
 			Dismissed?.Invoke(this, EventArgs.Empty);
-			if (!(completionSources is null)) {
+			if (completionSources is not null) {
 				foreach (var source in completionSources)
 					source.Dispose();
 				completionSources = null;
@@ -207,7 +207,7 @@ namespace dnSpy.Language.Intellisense {
 			if (selectedCompletionSet is null)
 				throw new InvalidOperationException();
 			selectedCompletionSet.SelectBestMatch();
-			return !(selectedCompletionSet.SelectionStatus.Completion is null);
+			return selectedCompletionSet.SelectionStatus.Completion is not null;
 		}
 
 		public ITrackingPoint? GetTriggerPoint(ITextBuffer textBuffer) {

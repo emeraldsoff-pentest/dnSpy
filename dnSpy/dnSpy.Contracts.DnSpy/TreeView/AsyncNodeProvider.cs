@@ -112,13 +112,13 @@ namespace dnSpy.Contracts.TreeView {
 		/// </summary>
 		/// <param name="create">Creates the message node</param>
 		protected void AddMessageNode(Func<TreeNodeData> create) => UI(() => {
-			Debug.Assert(msgNode is null);
+			Debug2.Assert(msgNode is null);
 			msgNode = targetNode.TreeNode.TreeView.Create(create());
 			targetNode.TreeNode.AddChild(msgNode);
 		});
 
 		void RemoveMessageNode_UI() {
-			if (!(msgNode is null))
+			if (msgNode is not null)
 				targetNode.TreeNode.Children.Remove(msgNode);
 			OnCompleted();
 		}

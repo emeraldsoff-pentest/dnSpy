@@ -64,7 +64,7 @@ namespace dnSpy.Text.Editor {
 			if (BrushComparer.Equals(newBackgroundBrush, backgroundBrush))
 				return;
 			backgroundBrush = newBackgroundBrush;
-			if (!(markerElement is null))
+			if (markerElement is not null)
 				markerElement.BackgroundBrush = backgroundBrush;
 		}
 		Brush? backgroundBrush;
@@ -138,7 +138,7 @@ namespace dnSpy.Text.Editor {
 		}
 
 		void CreateMarkerElement(SnapshotSpan fullSpan, Geometry geo) {
-			Debug.Assert(markerElement is null);
+			Debug2.Assert(markerElement is null);
 			RemoveAllAdornments();
 			markerElement = new MarkerElement(geo);
 			markerElement.BackgroundBrush = backgroundBrush;

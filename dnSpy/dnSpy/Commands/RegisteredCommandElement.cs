@@ -132,7 +132,7 @@ namespace dnSpy.Commands {
 		CommandInfo GetCommand(KeyEventArgs e, object target, out bool waitForSecondKey) {
 			var keyInput = new KeyInput(e);
 			ProviderAndCommand result;
-			if (!(prevKey is null)) {
+			if (prevKey is not null) {
 				waitForSecondKey = false;
 				var keyShortcut = new KeyShortcut(prevKey.Value, keyInput);
 				result = keyShortcutCollection.GetTwoKeyShortcuts(keyShortcut).FirstOrDefault();
@@ -178,7 +178,7 @@ namespace dnSpy.Commands {
 		}
 
 		void SourceElement_PreviewTextInput(object? sender, TextCompositionEventArgs e) {
-			Debug.Assert(prevKey is null);
+			Debug2.Assert(prevKey is null);
 			prevKey = null;
 			var target = TryGetTargetOrUnregister();
 			if (target is null)

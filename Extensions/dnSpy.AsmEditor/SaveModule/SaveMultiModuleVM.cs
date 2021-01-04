@@ -73,7 +73,7 @@ namespace dnSpy.AsmEditor.SaveModule {
 					OnPropertyChanged(nameof(IsSavingOrCanceling));
 					OnModuleSettingsSaved();
 
-					if (saveState == SaveState.Saved && !(OnSavedEvent is null))
+					if (saveState == SaveState.Saved && OnSavedEvent is not null)
 						OnSavedEvent(this, EventArgs.Empty);
 				}
 			}
@@ -81,8 +81,8 @@ namespace dnSpy.AsmEditor.SaveModule {
 		SaveState saveState = SaveState.Loaded;
 
 		public ICommand SaveCommand => new RelayCommand(a => Save(), a => CanExecuteSave);
-		public ICommand CancelSaveCommand => new RelayCommand(a => CancelSave(), a => IsSaving && !(moduleSaver is null));
-		public event EventHandler OnSavedEvent;
+		public ICommand CancelSaveCommand => new RelayCommand(a => CancelSave(), a => IsSaving && moduleSaver is not null);
+		public event EventHandler? OnSavedEvent;
 		public bool IsLoaded => State == SaveState.Loaded;
 		public bool IsSaving => State == SaveState.Saving;
 		public bool IsCanceling => State == SaveState.Canceling;
@@ -207,7 +207,7 @@ namespace dnSpy.AsmEditor.SaveModule {
 			throw new InvalidOperationException();
 		}
 
-		SaveOptionsVM GetSaveOptionsVM(object obj) => Modules.FirstOrDefault(a => a.UndoDocument == obj);
+		SaveOptionsVM? GetSaveOptionsVM(object obj) => Modules.FirstOrDefault(a => a.UndoDocument == obj);
 
 		public bool WasSaved(object obj) {
 			var data = GetSaveOptionsVM(obj);
@@ -346,7 +346,7 @@ namespace dnSpy.AsmEditor.SaveModule {
 			ms.CancelAsync();
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler? PropertyChanged;
 		void OnPropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
 	}
 }

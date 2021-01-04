@@ -42,10 +42,10 @@ namespace dnSpy.Debugger.ToolWindows.Memory {
 		/// <summary>
 		/// Raised when the underlying stream has changed
 		/// </summary>
-		event EventHandler UnderlyingStreamChanged;
+		event EventHandler? UnderlyingStreamChanged;
 
 		DbgProcess? Process { get; }
-		event EventHandler UnderlyingProcessChanged;
+		event EventHandler? UnderlyingProcessChanged;
 	}
 
 	readonly struct HexBufferInfoCreatedEventArgs {
@@ -71,7 +71,7 @@ namespace dnSpy.Debugger.ToolWindows.Memory {
 		/// <summary>
 		/// Raised when a new buffer has been created
 		/// </summary>
-		public abstract event EventHandler<HexBufferInfoCreatedEventArgs> HexBufferInfoCreated;
+		public abstract event EventHandler<HexBufferInfoCreatedEventArgs>? HexBufferInfoCreated;
 
 		/// <summary>
 		/// Checks whether <paramref name="buffer"/> is a buffer created by this class
@@ -123,7 +123,7 @@ namespace dnSpy.Debugger.ToolWindows.Memory {
 		readonly List<ProcessInfo> processInfos;
 		readonly List<BufferState> bufferStates;
 
-		public override event EventHandler<HexBufferInfoCreatedEventArgs> HexBufferInfoCreated;
+		public override event EventHandler<HexBufferInfoCreatedEventArgs>? HexBufferInfoCreated;
 
 		sealed class ProcessInfo {
 			public DbgProcess Process { get; }
@@ -145,8 +145,8 @@ namespace dnSpy.Debugger.ToolWindows.Memory {
 			public HexBuffer Buffer { get; }
 			DebuggerHexBufferStream DebuggerHexBufferStream { get; }
 			public DbgProcess? Process { get; private set; }
-			public event EventHandler UnderlyingStreamChanged;
-			public event EventHandler UnderlyingProcessChanged;
+			public event EventHandler? UnderlyingStreamChanged;
+			public event EventHandler? UnderlyingProcessChanged;
 
 			public BufferState(HexBuffer buffer, DebuggerHexBufferStream debuggerHexBufferStream) {
 				Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
@@ -209,7 +209,7 @@ namespace dnSpy.Debugger.ToolWindows.Memory {
 			else {
 				foreach (var p in processes) {
 					var info = TryGetProcessInfo_UI(p.Id);
-					Debug.Assert(!(info is null));
+					Debug2.Assert(info is not null);
 					if (info is null)
 						continue;
 					ClearProcessStream_UI(info);
@@ -230,7 +230,7 @@ namespace dnSpy.Debugger.ToolWindows.Memory {
 		}
 
 		// UI thread
-		void InitializeNonInitializedBuffers_UI(ProcessInfo info) {
+		void InitializeNonInitializedBuffers_UI(ProcessInfo? info) {
 			uiDispatcher.VerifyAccess();
 			if (info is null)
 				return;
@@ -311,7 +311,7 @@ namespace dnSpy.Debugger.ToolWindows.Memory {
 		// UI thread
 		public override bool IsValidBuffer(HexBuffer buffer) {
 			uiDispatcher.VerifyAccess();
-			return !(TryGetBufferState_UI(buffer) is null);
+			return TryGetBufferState_UI(buffer) is not null;
 		}
 
 		// UI thread

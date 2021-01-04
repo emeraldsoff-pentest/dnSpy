@@ -159,7 +159,7 @@ namespace dnSpy.Contracts.MVVM {
 		}
 
 		/// <inheritdoc/>
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler? PropertyChanged;
 		void OnPropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
 
 		string IDataErrorInfo.Error { get { throw new NotImplementedException(); } }
@@ -167,7 +167,7 @@ namespace dnSpy.Contracts.MVVM {
 		string IDataErrorInfo.this[string columnName] {
 			get {
 				if (columnName == nameof(SelectedIndex)) {
-					if (!(DataErrorInfoDelegate is null))
+					if (DataErrorInfoDelegate is not null)
 						return DataErrorInfoDelegate(this);
 				}
 				return string.Empty;

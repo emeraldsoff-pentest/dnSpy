@@ -51,7 +51,7 @@ namespace dnSpy.Text.Editor {
 			set => textCaretLayer.IsHidden = value;
 		}
 
-		public event EventHandler<CaretPositionChangedEventArgs> PositionChanged;
+		public event EventHandler<CaretPositionChangedEventArgs>? PositionChanged;
 		public CaretPosition Position => new CaretPosition(currentPosition, textView.BufferGraph.CreateMappingPoint(currentPosition.Position, PointTrackingMode.Positive), Affinity);
 		VirtualSnapshotPoint currentPosition;
 
@@ -102,7 +102,7 @@ namespace dnSpy.Text.Editor {
 		}
 
 		void InitializeIME() {
-			if (!(imeState.HwndSource is null))
+			if (imeState.HwndSource is not null)
 				return;
 			imeState.HwndSource = PresentationSource.FromVisual(textView.VisualElement) as HwndSource;
 			if (imeState.HwndSource is null)
@@ -138,7 +138,7 @@ namespace dnSpy.Text.Editor {
 
 		static class TfThreadMgrHelper {
 			static bool initd;
-			static ITfThreadMgr tfThreadMgr;
+			static ITfThreadMgr? tfThreadMgr;
 
 			[DllImport("msctf")]
 			static extern int TF_CreateThreadMgr(out ITfThreadMgr pptim);
@@ -264,11 +264,11 @@ namespace dnSpy.Text.Editor {
 
 			var rootVisual = imeState.HwndSource!.RootVisual;
 			GeneralTransform? generalTransform = null;
-			if (!(rootVisual is null) && rootVisual.IsAncestorOf(textView.VisualElement))
+			if (rootVisual is not null && rootVisual.IsAncestorOf(textView.VisualElement))
 				generalTransform = textView.VisualElement.TransformToAncestor(rootVisual);
 
 			var compTarget = imeState.HwndSource.CompositionTarget;
-			if (!(generalTransform is null) && !(compTarget is null)) {
+			if (generalTransform is not null && compTarget is not null) {
 				var transform = compTarget.TransformToDevice;
 				compForm.dwStyle = CFS_FORCE_POSITION;
 
@@ -520,7 +520,7 @@ namespace dnSpy.Text.Editor {
 
 		void SavePreferredYCoordinate() {
 			var line = GetVisibleCaretLine();
-			if (!(line is null))
+			if (line is not null)
 				__preferredYCoordinate = (line.Top + line.Bottom) / 2 - textView.ViewportTop;
 			else
 				__preferredYCoordinate = 0;

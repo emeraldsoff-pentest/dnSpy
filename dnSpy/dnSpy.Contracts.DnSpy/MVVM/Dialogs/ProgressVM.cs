@@ -109,7 +109,7 @@ namespace dnSpy.Contracts.MVVM.Dialogs {
 		/// <summary>
 		/// Raised when it has completed
 		/// </summary>
-		public event EventHandler OnCompleted;
+		public event EventHandler? OnCompleted;
 
 		/// <summary>
 		/// true if it <see cref="Cancel"/> can be called
@@ -201,7 +201,7 @@ namespace dnSpy.Contracts.MVVM.Dialogs {
 		/// <summary>
 		/// true if there was an error
 		/// </summary>
-		public bool WasError => !(ErrorMessage is null);
+		public bool WasError => ErrorMessage is not null;
 
 		/// <summary>
 		/// Gets the error message or null if no error

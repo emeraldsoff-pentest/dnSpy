@@ -17,24 +17,15 @@
     along with dnSpy.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace dnSpy.Contracts.Disassembly {
-	/// <summary>
-	/// masm disassembly settings
-	/// </summary>
-	public interface IMasmDisassemblySettings : IX86DisassemblySettings {
-		/// <summary>
-		/// Add a DS segment override even if it's not present. Used if it's 16/32-bit code and mem op is a displ, eg. 'mov eax,[12345678]' vs 'mov eax,ds:[12345678]'
-		/// </summary>
-		bool AddDsPrefix32 { get; set; }
+// This is needed because net4x reference assemblies don't have any nullable attributes
 
-		/// <summary>
-		/// Show symbols in brackets, eg. '[ecx+symbol]' vs 'symbol[ecx]' and '[symbol]' vs 'symbol'
-		/// </summary>
-		bool SymbolDisplInBrackets { get; set; }
+using System.Diagnostics.CodeAnalysis;
 
-		/// <summary>
-		/// Show displacements in brackets, eg. '[ecx+1234h]' vs '1234h[ecx]'
-		/// </summary>
-		bool DisplInBrackets { get; set; }
+namespace System.Diagnostics {
+	static class Debug2 {
+		[Conditional("DEBUG")]
+		public static void Assert([DoesNotReturnIf(false)] bool condition) => Debug.Assert(condition);
+		[Conditional("DEBUG")]
+		public static void Assert([DoesNotReturnIf(false)] bool condition, string? message) => Debug.Assert(condition, message);
 	}
 }

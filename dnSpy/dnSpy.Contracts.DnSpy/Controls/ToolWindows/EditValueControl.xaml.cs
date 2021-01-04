@@ -157,7 +157,7 @@ namespace dnSpy.Contracts.Controls.ToolWindows {
 			}
 
 			DisposeEditValue();
-			Debug.Assert(editValue is null);
+			Debug2.Assert(editValue is null);
 			var info = editableValue.GetText();
 			editValue = EditValueProvider?.Create(info.Text, info.Flags);
 			if (editValue is null) {
@@ -177,7 +177,7 @@ namespace dnSpy.Contracts.Controls.ToolWindows {
 		static UIElement GetUIElement(object? obj) => obj as UIElement ?? new ContentPresenter { Content = obj };
 
 		void CancelEdit(IEditableValue? editableValue) {
-			if (!(editableValue is null))
+			if (editableValue is not null)
 				editableValue.IsEditingValue = false;
 			RemoveEditControl();
 		}

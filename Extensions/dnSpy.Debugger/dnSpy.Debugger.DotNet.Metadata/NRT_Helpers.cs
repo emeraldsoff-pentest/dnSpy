@@ -17,24 +17,15 @@
     along with dnSpy.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace dnSpy.Contracts.Disassembly {
-	/// <summary>
-	/// GNU assembler (AT&amp;T syntax) disassembly settings
-	/// </summary>
-	public interface IGasDisassemblySettings : IX86DisassemblySettings {
-		/// <summary>
-		/// If true, the formatter doesn't add '%' to registers, eg. %eax vs eax
-		/// </summary>
-		bool NakedRegisters { get; set; }
+// This is needed because net4x reference assemblies don't have any nullable attributes
 
-		/// <summary>
-		/// Shows the mnemonic size suffix, eg. 'mov %eax,%ecx' vs 'movl %eax,%ecx'
-		/// </summary>
-		bool ShowMnemonicSizeSuffix { get; set; }
+using System.Diagnostics.CodeAnalysis;
 
-		/// <summary>
-		/// Add a space after the comma if it's a memory operand, eg. '(%eax,%ecx,2)' vs '(%eax, %ecx, 2)'
-		/// </summary>
-		bool SpaceAfterMemoryOperandComma { get; set; }
+namespace System.Diagnostics {
+	static class Debug2 {
+		[Conditional("DEBUG")]
+		public static void Assert([DoesNotReturnIf(false)] bool condition) => Debug.Assert(condition);
+		[Conditional("DEBUG")]
+		public static void Assert([DoesNotReturnIf(false)] bool condition, string? message) => Debug.Assert(condition, message);
 	}
 }

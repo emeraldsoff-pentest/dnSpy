@@ -28,7 +28,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace dnSpy.Text.Editor {
 	interface IWpfTextViewMarginProviderCollection {
 		WpfTextViewMarginInfo[] Margins { get; }
-		event EventHandler MarginsChanged;
+		event EventHandler? MarginsChanged;
 		void Dispose();
 	}
 
@@ -51,7 +51,7 @@ namespace dnSpy.Text.Editor {
 		WpfTextViewMarginInfo[] currentMargins;
 
 		public WpfTextViewMarginInfo[] Margins => currentMargins;
-		public event EventHandler MarginsChanged;
+		public event EventHandler? MarginsChanged;
 
 		public WpfTextViewMarginProviderCollection(Lazy<IWpfTextViewMarginProvider, IWpfTextViewMarginMetadata>[] wpfTextViewMarginProviders, IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer, string marginContainerName) {
 			if (wpfTextViewMarginProviders is null)
@@ -90,7 +90,7 @@ namespace dnSpy.Text.Editor {
 				}
 				else {
 					var margin = lazy.Value.CreateMargin(wpfTextViewHost, marginContainer);
-					if (!(margin is null))
+					if (margin is not null)
 						newInfos.Add(new WpfTextViewMarginInfo(lazy.Value, lazy.Metadata, margin));
 				}
 			}

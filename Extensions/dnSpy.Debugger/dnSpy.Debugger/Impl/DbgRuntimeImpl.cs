@@ -41,7 +41,7 @@ namespace dnSpy.Debugger.Impl {
 		public override ReadOnlyCollection<string> Tags { get; }
 		public override DbgInternalRuntime InternalRuntime { get; }
 
-		public override event EventHandler<DbgCollectionChangedEventArgs<DbgAppDomain>> AppDomainsChanged;
+		public override event EventHandler<DbgCollectionChangedEventArgs<DbgAppDomain>>? AppDomainsChanged;
 		public override DbgAppDomain[] AppDomains {
 			get {
 				lock (lockObj)
@@ -50,7 +50,7 @@ namespace dnSpy.Debugger.Impl {
 		}
 		readonly List<DbgAppDomain> appDomains;
 
-		public override event EventHandler<DbgCollectionChangedEventArgs<DbgModule>> ModulesChanged;
+		public override event EventHandler<DbgCollectionChangedEventArgs<DbgModule>>? ModulesChanged;
 		public override DbgModule[] Modules {
 			get {
 				lock (lockObj)
@@ -59,7 +59,7 @@ namespace dnSpy.Debugger.Impl {
 		}
 		readonly List<DbgModule> modules;
 
-		public override event EventHandler<DbgCollectionChangedEventArgs<DbgThread>> ThreadsChanged;
+		public override event EventHandler<DbgCollectionChangedEventArgs<DbgThread>>? ThreadsChanged;
 		public override DbgThread[] Threads {
 			get {
 				lock (lockObj)
@@ -125,7 +125,7 @@ namespace dnSpy.Debugger.Impl {
 				else
 					newCurrent = newBreak;
 			}
-			Debug.Assert((!(newBreak is null)) == (!(newCurrent is null)));
+			Debug2.Assert((newBreak is not null) == (newCurrent is not null));
 			currentThread = new CurrentObject<DbgThreadImpl>(newCurrent, newBreak);
 			return newCurrent;
 		}
@@ -175,17 +175,17 @@ namespace dnSpy.Debugger.Impl {
 					}
 				}
 			}
-			if (!(threadsToRemove is null) && threadsToRemove.Count != 0)
+			if (threadsToRemove is not null && threadsToRemove.Count != 0)
 				ThreadsChanged?.Invoke(this, new DbgCollectionChangedEventArgs<DbgThread>(threadsToRemove, added: false));
-			if (!(modulesToRemove is null) && modulesToRemove.Count != 0)
+			if (modulesToRemove is not null && modulesToRemove.Count != 0)
 				ModulesChanged?.Invoke(this, new DbgCollectionChangedEventArgs<DbgModule>(modulesToRemove, added: false));
 			owner.RemoveAppDomain_DbgThread(this, appDomain, messageFlags);
 			AppDomainsChanged?.Invoke(this, new DbgCollectionChangedEventArgs<DbgAppDomain>(appDomain, added: false));
-			if (!(threadsToRemove is null)) {
+			if (threadsToRemove is not null) {
 				foreach (var thread in threadsToRemove)
 					thread.Close(Dispatcher);
 			}
-			if (!(modulesToRemove is null)) {
+			if (modulesToRemove is not null) {
 				foreach (var module in modulesToRemove)
 					module.Close(Dispatcher);
 			}

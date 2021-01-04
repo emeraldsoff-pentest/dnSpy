@@ -32,7 +32,7 @@ namespace dnSpy.Decompiler.ILSpy.Core.Settings {
 		readonly DecompilerSettings decompilerSettings;
 
 		public override int Version => decompilerSettings.SettingsVersion;
-		public override event EventHandler VersionChanged;
+		public override event EventHandler? VersionChanged;
 
 		public CSharpVBDecompilerSettings(DecompilerSettings? decompilerSettings = null) {
 			this.decompilerSettings = decompilerSettings ?? new DecompilerSettings();
@@ -223,6 +223,11 @@ namespace dnSpy.Decompiler.ILSpy.Core.Settings {
 				Description = dnSpy_Decompiler_ILSpy_Core_Resources.DecompilerSettings_RemoveNewDelegateClass,
 				Name = DecompilerOptionConstants.RemoveNewDelegateClass_NAME,
 			};
+			yield return new DecompilerOption<bool>(DecompilerOptionConstants.HexadecimalNumbers_GUID,
+						() => decompilerSettings.HexadecimalNumbers, a => decompilerSettings.HexadecimalNumbers = a) {
+				Description = dnSpy_Decompiler_ILSpy_Core_Resources.DecompilerSettings_HexadecimalNumbers,
+				Name = DecompilerOptionConstants.HexadecimalNumbers_NAME,
+			};
 		}
 
 		string GetMemberOrder() =>
@@ -268,7 +273,7 @@ namespace dnSpy.Decompiler.ILSpy.Core.Settings {
 
 		public override bool Equals(object? obj) {
 			var other = obj as CSharpVBDecompilerSettings;
-			return !(other is null) && decompilerSettings.Equals(other.decompilerSettings);
+			return other is not null && decompilerSettings.Equals(other.decompilerSettings);
 		}
 
 		public override int GetHashCode() => decompilerSettings.GetHashCode();

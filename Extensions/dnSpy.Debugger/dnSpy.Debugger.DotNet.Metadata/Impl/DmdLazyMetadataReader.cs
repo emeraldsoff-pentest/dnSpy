@@ -38,7 +38,7 @@ namespace dnSpy.Debugger.DotNet.Metadata.Impl {
 		DmdMetadataReader InitializeMetadataReader() {
 			lock (lockObj) {
 				var reader = __metadataReader_DONT_USE;
-				if (!(reader is null))
+				if (reader is not null)
 					return reader;
 				if (module is null)
 					throw new InvalidOperationException();
@@ -53,7 +53,7 @@ namespace dnSpy.Debugger.DotNet.Metadata.Impl {
 		}
 
 		void DmdMetadataReader_TypesUpdated(object? sender, DmdTypesUpdatedEventArgs e) => typesUpdated?.Invoke(this, e);
-		public override event EventHandler<DmdTypesUpdatedEventArgs> TypesUpdated {
+		public override event EventHandler<DmdTypesUpdatedEventArgs>? TypesUpdated {
 			add => typesUpdated += value;
 			remove => typesUpdated -= value;
 		}

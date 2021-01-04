@@ -40,7 +40,7 @@ namespace dnSpy.Decompiler.ILSpy.Core.IL {
 		}
 
 		public DecompilerProvider(DecompilerSettingsService decompilerSettingsService) {
-			Debug.Assert(!(decompilerSettingsService is null));
+			Debug2.Assert(decompilerSettingsService is not null);
 			this.decompilerSettingsService = decompilerSettingsService ?? throw new ArgumentNullException(nameof(decompilerSettingsService));
 		}
 
@@ -89,12 +89,13 @@ namespace dnSpy.Decompiler.ILSpy.Core.IL {
 			var sb = new StringBuilder();
 			if (langSettings.Settings.ShowXmlDocumentation)
 				disOpts.GetXmlDocComments = a => GetXmlDocComments(a, sb);
-			disOpts.CreateInstructionBytesReader = m => InstructionBytesReader.Create(m, !(ctx.IsBodyModified is null) && ctx.IsBodyModified(m));
+			disOpts.CreateInstructionBytesReader = m => InstructionBytesReader.Create(m, ctx.IsBodyModified is not null && ctx.IsBodyModified(m));
 			disOpts.ShowTokenAndRvaComments = langSettings.Settings.ShowTokenAndRvaComments;
 			disOpts.ShowILBytes = langSettings.Settings.ShowILBytes;
 			disOpts.SortMembers = langSettings.Settings.SortMembers;
 			disOpts.ShowPdbInfo = langSettings.Settings.ShowPdbInfo;
 			disOpts.MaxStringLength = langSettings.Settings.MaxStringLength;
+			disOpts.HexadecimalNumbers = langSettings.Settings.HexadecimalNumbers;
 			return new ReflectionDisassembler(output, detectControlStructure, disOpts);
 		}
 
@@ -105,12 +106,12 @@ namespace dnSpy.Decompiler.ILSpy.Core.IL {
 			if (xmldoc is null)
 				yield break;
 			var doc = xmldoc.GetDocumentation(XmlDocKeyProvider.GetKey(mr, sb));
-			if (string.IsNullOrEmpty(doc))
+			if (string2.IsNullOrEmpty(doc))
 				yield break;
 
 			foreach (var info in new XmlDocLine(doc)) {
 				sb.Clear();
-				if (!(info is null)) {
+				if (info is not null) {
 					sb.Append(' ');
 					info.Value.WriteTo(sb);
 				}
@@ -131,11 +132,11 @@ namespace dnSpy.Decompiler.ILSpy.Core.IL {
 		public override void Decompile(PropertyDef property, IDecompilerOutput output, DecompilationContext ctx) {
 			ReflectionDisassembler rd = CreateReflectionDisassembler(output, ctx, property);
 			rd.DisassembleProperty(property, addLineSep: true);
-			if (!(property.GetMethod is null)) {
+			if (property.GetMethod is not null) {
 				output.WriteLine();
 				rd.DisassembleMethod(property.GetMethod, true);
 			}
-			if (!(property.SetMethod is null)) {
+			if (property.SetMethod is not null) {
 				output.WriteLine();
 				rd.DisassembleMethod(property.SetMethod, true);
 			}
@@ -148,11 +149,11 @@ namespace dnSpy.Decompiler.ILSpy.Core.IL {
 		public override void Decompile(EventDef ev, IDecompilerOutput output, DecompilationContext ctx) {
 			ReflectionDisassembler rd = CreateReflectionDisassembler(output, ctx, ev);
 			rd.DisassembleEvent(ev, addLineSep: true);
-			if (!(ev.AddMethod is null)) {
+			if (ev.AddMethod is not null) {
 				output.WriteLine();
 				rd.DisassembleMethod(ev.AddMethod, true);
 			}
-			if (!(ev.RemoveMethod is null)) {
+			if (ev.RemoveMethod is not null) {
 				output.WriteLine();
 				rd.DisassembleMethod(ev.RemoveMethod, true);
 			}

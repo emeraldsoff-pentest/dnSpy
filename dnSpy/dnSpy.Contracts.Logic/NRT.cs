@@ -15,6 +15,19 @@ namespace System.Diagnostics.CodeAnalysis {
 	public sealed class MaybeNullAttribute : Attribute {
 		public MaybeNullAttribute() { }
 	}
+	[AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
+	public sealed class DoesNotReturnIfAttribute : Attribute {
+		public DoesNotReturnIfAttribute(bool parameterValue) => ParameterValue = parameterValue;
+		public bool ParameterValue { get; }
+	}
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, Inherited = false)]
+	public sealed class AllowNullAttribute : Attribute {
+		public AllowNullAttribute() { }
+	}
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, Inherited = false)]
+	public sealed class DisallowNullAttribute : Attribute {
+		public DisallowNullAttribute() { }
+	}
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
 #endif

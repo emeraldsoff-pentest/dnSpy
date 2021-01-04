@@ -76,7 +76,7 @@ namespace dnSpy.Debugger.Evaluation {
 				Providers = providers ?? throw new ArgumentNullException(nameof(providers));
 		}
 
-		public override event EventHandler<DbgLanguageChangedEventArgs> LanguageChanged;
+		public override event EventHandler<DbgLanguageChangedEventArgs>? LanguageChanged;
 
 		[ImportingConstructor]
 		DbgLanguageServiceImpl(Lazy<DbgManager> dbgManager, [ImportMany] IEnumerable<Lazy<DbgEngineLanguageProvider, IDbgEngineLanguageProviderMetadata>> dbgEngineLanguageProviders, [ImportMany] IEnumerable<Lazy<IDbgLanguageServiceListener>> dbgLanguageServiceListeners) {
@@ -111,7 +111,7 @@ namespace dnSpy.Debugger.Evaluation {
 					Debug.Assert(langs.Count != 0);
 					if (langs.Count == 0 || langs[0].Name == PredefinedDbgLanguageNames.None)
 						continue;
-					var runtimeName = kv.Value.Providers.FirstOrDefault(a => !(a.Value.RuntimeDisplayName is null))?.Value.RuntimeDisplayName;
+					var runtimeName = kv.Value.Providers.FirstOrDefault(a => a.Value.RuntimeDisplayName is not null)?.Value.RuntimeDisplayName;
 					if (runtimeName is null)
 						continue;
 					var languageName = GetCurrentLanguage(kv.Key).Name;

@@ -36,7 +36,7 @@ namespace dnSpy.Hex.Adornments {
 #pragma warning disable CS0169
 		[Export(typeof(HexSpaceReservationManagerDefinition))]
 		[VSUTIL.Name(PredefinedHexSpaceReservationManagerNames.ToolTip)]
-		static readonly HexSpaceReservationManagerDefinition toolTipSpaceReservationManagerDefinition;
+		static readonly HexSpaceReservationManagerDefinition? toolTipSpaceReservationManagerDefinition;
 #pragma warning restore CS0169
 
 		public HexToolTipProviderImpl(WpfHexView wpfHexView) {
@@ -45,7 +45,7 @@ namespace dnSpy.Hex.Adornments {
 		}
 
 		public override void ClearToolTip() {
-			if (!(toolTipAgent is null))
+			if (toolTipAgent is not null)
 				spaceReservationManager.RemoveAgent(toolTipAgent);
 		}
 

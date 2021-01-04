@@ -97,7 +97,7 @@ namespace dnSpy.AsmEditor.Hex.PE {
 			if (DataFieldVM.HasError)
 				return;
 			var newData = GetDataAsByteArray();
-			Debug.Assert(!(newData is null) && newData.LongLength == Span.Length);
+			Debug2.Assert(newData is not null && newData.LongLength == Span.Length);
 
 			var origData = buffer.ReadBytes(Span.Start, newData.LongLength);
 			if (Equals(newData, origData))
@@ -201,7 +201,7 @@ namespace dnSpy.AsmEditor.Hex.PE {
 		public override string FormattedValue => $"{ReadData():X8}";
 
 		public static UInt32HexField TryCreate(StructField<UInt32Data>? field, bool useDecimal = false) {
-			if (!(field is null))
+			if (field is not null)
 				return new UInt32HexField(field, useDecimal);
 			return new UInt32HexField();
 		}
@@ -402,7 +402,7 @@ namespace dnSpy.AsmEditor.Hex.PE {
 		}
 
 		public void Add(HexBitField bitField) {
-			Debug.Assert(bitField.Owner is null);
+			Debug2.Assert(bitField.Owner is null);
 			bitField.Owner = this;
 			bitFields.Add(bitField.Bit, bitField);
 			Debug.Assert(!DataFieldVM.HasError);	// Should only be called at init and it's then always valid

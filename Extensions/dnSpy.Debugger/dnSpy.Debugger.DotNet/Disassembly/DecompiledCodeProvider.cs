@@ -43,7 +43,7 @@ namespace dnSpy.Debugger.DotNet.Disassembly {
 		}
 
 		public bool TryDecompile() {
-			Debug.Assert(output is null);
+			Debug2.Assert(output is null);
 			output = new DecompilerOutputImpl();
 
 			if (!StateMachineHelpers.TryGetKickoffMethod(method, out var containingMethod))
@@ -62,7 +62,7 @@ namespace dnSpy.Debugger.DotNet.Disassembly {
 				info = TryDecompileCode(method, method.MDToken.Raw, ctx, output);
 			}
 			debugInfo = info.debugInfo;
-			return !(debugInfo is null);
+			return debugInfo is not null;
 		}
 
 		public NativeVariableInfo[] CreateNativeVariableInfo() {

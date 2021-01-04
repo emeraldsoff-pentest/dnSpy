@@ -50,18 +50,18 @@ namespace dnSpy.Contracts.Language.Intellisense {
 
 			if (completionText.IndexOf(searchText, stringComparison) >= 0)
 				return true;
-			if (!(acronymMatchIndexes is null) && TryUpdateAcronymIndexes(completionText))
+			if (acronymMatchIndexes is not null && TryUpdateAcronymIndexes(completionText))
 				return true;
 
 			return false;
 		}
 
 		public Span[] GetMatchSpans(string completionText) {
-			Debug.Assert(acronymMatchIndexes is null || acronymMatchIndexes.Length > 0);
+			Debug2.Assert(acronymMatchIndexes is null || acronymMatchIndexes.Length > 0);
 
 			// Acronyms have higher priority, eg. TA should match |T|ask|A|waiter
 			// and not |Ta|skAwaiter.
-			if (!(acronymMatchIndexes is null) && TryUpdateAcronymIndexes(completionText)) {
+			if (acronymMatchIndexes is not null && TryUpdateAcronymIndexes(completionText)) {
 				var localIndexes = acronymMatchIndexes;
 				var res = new Span[localIndexes.Length];
 				for (int i = 0; i < localIndexes.Length; i++)

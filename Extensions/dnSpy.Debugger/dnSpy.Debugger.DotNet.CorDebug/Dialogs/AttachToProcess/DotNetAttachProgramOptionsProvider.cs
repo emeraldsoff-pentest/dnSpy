@@ -20,75 +20,57 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using dndbg.Engine;
 using dnSpy.Contracts.Debugger;
 using dnSpy.Contracts.Debugger.Attach;
 using dnSpy.Debugger.DotNet.CorDebug.Impl;
 using dnSpy.Debugger.DotNet.CorDebug.Impl.Attach;
 using dnSpy.Debugger.DotNet.CorDebug.Utilities;
-using dnSpy.Debugger.Shared;
 
 namespace dnSpy.Debugger.DotNet.CorDebug.Dialogs.AttachToProcess {
-	[ExportAttachProgramOptionsProviderFactory(PredefinedAttachProgramOptionsProviderNames.DotNetCore)]
-	sealed class DotNetCoreAttachProgramOptionsProviderFactory : AttachProgramOptionsProviderFactory {
-		public override AttachProgramOptionsProvider? Create(bool allFactories) => new DotNetCoreAttachProgramOptionsProvider();
+	[ExportAttachProgramOptionsProviderFactory(PredefinedAttachProgramOptionsProviderNames.DotNet)]
+	sealed class DotNetAttachProgramOptionsProviderFactory : AttachProgramOptionsProviderFactory {
+		public override AttachProgramOptionsProvider? Create(bool allFactories) => new DotNetAttachProgramOptionsProvider();
 	}
 
-	sealed class DotNetCoreAttachProgramOptionsProvider : AttachProgramOptionsProvider {
+	sealed class DotNetAttachProgramOptionsProvider : AttachProgramOptionsProvider {
 		public override IEnumerable<AttachProgramOptions> Create(AttachProgramOptionsProviderContext context) {
 			foreach (var process in DebuggableProcesses.GetProcesses(context.ProcessIds, context.IsValidProcess, context.CancellationToken)) {
-				ProcessModule[] modules;
-				try {
-					modules = process.Modules.Cast<ProcessModule>().ToArray();
-				}
-				catch {
-					continue;
-				}
-				var coreclrFilename = FileUtilities.GetNativeDllFilename("coreclr");
-				foreach (var module in modules) {
-					var moduleFilename = module.FileName;
-					var dllName = Path.GetFileName(moduleFilename);
-					if (dllName.Equals(coreclrFilename, StringComparison.OrdinalIgnoreCase)) {
-						foreach (var info in TryGetCoreCLRInfos(process, moduleFilename)) {
-							context.CancellationToken.ThrowIfCancellationRequested();
-							yield return info;
-						}
-						break;
-					}
+				foreach (var info in TryGetCoreCLRInfos(process)) {
+					context.CancellationToken.ThrowIfCancellationRequested();
+					yield return info;
 				}
 			}
 		}
 
-		IEnumerable<DotNetCoreAttachProgramOptions> TryGetCoreCLRInfos(Process process, string coreclrFilename) {
+		IEnumerable<DotNetAttachProgramOptions> TryGetCoreCLRInfos(Process process) {
 			// We can only debug processes with the same bitness
 			int bitness = IntPtr.Size * 8;
-			var dbgShimFilename = DotNetCoreHelpers.GetDebugShimFilename(bitness);
-			foreach (var ccInfo in CoreCLRHelper.GetCoreCLRInfos(process.Id, coreclrFilename, dbgShimFilename))
-				yield return new DotNetCoreAttachProgramOptions(process.Id, ccInfo.CoreCLRTypeInfo.Version, ccInfo.CoreCLRTypeInfo.CoreCLRFilename);
+			var dbgShimFilename = DotNetHelpers.GetDebugShimFilename(bitness);
+			foreach (var ccInfo in CoreCLRHelper.GetCoreCLRInfos(process.Id, null, dbgShimFilename))
+				yield return new DotNetAttachProgramOptions(process.Id, ccInfo.CoreCLRTypeInfo.Version, ccInfo.CoreCLRTypeInfo.CoreCLRFilename);
 		}
 	}
 
-	sealed class DotNetCoreAttachProgramOptions : AttachProgramOptions {
+	sealed class DotNetAttachProgramOptions : AttachProgramOptions {
 		public override int ProcessId { get; }
 		public override RuntimeId RuntimeId { get; }
 		public override string RuntimeName { get; }
-		public override Guid RuntimeGuid => PredefinedDbgRuntimeGuids.DotNetCore_Guid;
+		public override Guid RuntimeGuid => PredefinedDbgRuntimeGuids.DotNet_Guid;
 		public override Guid RuntimeKindGuid => PredefinedDbgRuntimeKindGuids.DotNet_Guid;
 
-		readonly string ?clrModuleVersion;
+		readonly string? clrModuleVersion;
 		readonly string? coreCLRFilename;
 
-		public DotNetCoreAttachProgramOptions(int pid, string? clrModuleVersion, string? coreCLRFilename) {
+		public DotNetAttachProgramOptions(int pid, string? clrModuleVersion, string? coreCLRFilename) {
 			ProcessId = pid;
-			RuntimeId = new DotNetCoreRuntimeId(clrModuleVersion);
+			RuntimeId = new DotNetRuntimeId(clrModuleVersion);
 			RuntimeName = "CoreCLR " + clrModuleVersion;
 			this.clrModuleVersion = clrModuleVersion;
 			this.coreCLRFilename = coreCLRFilename;
 		}
 
-		public override AttachToProgramOptions GetOptions() => new DotNetCoreAttachToProgramOptions {
+		public override AttachToProgramOptions GetOptions() => new DotNetAttachToProgramOptions {
 			ProcessId = ProcessId,
 			ClrModuleVersion = clrModuleVersion,
 			CoreCLRFilename = coreCLRFilename,

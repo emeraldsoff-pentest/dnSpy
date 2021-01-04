@@ -36,7 +36,7 @@ namespace dnSpy.Decompiler.MSBuild {
 
 			paramTypes = new Type[] { typeof(string), typeof(Func<Type, string>) };
 			ctorInfo = typeof(ResXResourceWriter).GetConstructor(paramTypes);
-			if (!(ctorInfo is null)) {
+			if (ctorInfo is not null) {
 				var dynMethod = new DynamicMethod("ResXResourceWriter-ctor", typeof(ResXResourceWriter), paramTypes);
 				var ilg = dynMethod.GetILGenerator();
 				ilg.Emit(OpCodes.Ldarg_0);
@@ -48,7 +48,7 @@ namespace dnSpy.Decompiler.MSBuild {
 
 			paramTypes = new Type[] { typeof(string), typeof(object), typeof(Func<Type, string>) };
 			ctorInfo = typeof(ResXDataNode).GetConstructor(paramTypes);
-			if (!(ctorInfo is null)) {
+			if (ctorInfo is not null) {
 				var dynMethod = new DynamicMethod("ResXDataNode-ctor", typeof(ResXDataNode), paramTypes);
 				var ilg = dynMethod.GetILGenerator();
 				ilg.Emit(OpCodes.Ldarg_0);
@@ -59,8 +59,8 @@ namespace dnSpy.Decompiler.MSBuild {
 				delegateResXDataNodeConstructor = (Func<string, object?, Func<Type, string>, ResXDataNode>)dynMethod.CreateDelegate(typeof(Func<string, object?, Func<Type, string>, ResXDataNode>));
 			}
 		}
-		static readonly Func<string, Func<Type, string>, ResXResourceWriter> delegateResXResourceWriterConstructor;
-		static readonly Func<string, object?, Func<Type, string>, ResXDataNode> delegateResXDataNodeConstructor;
+		static readonly Func<string, Func<Type, string>, ResXResourceWriter>? delegateResXResourceWriterConstructor;
+		static readonly Func<string, object?, Func<Type, string>, ResXDataNode>? delegateResXDataNodeConstructor;
 
 		public override string Description => dnSpy_Decompiler_Resources.MSBuild_CreateResXFile;
 		public override BuildAction BuildAction => BuildAction.EmbeddedResource;

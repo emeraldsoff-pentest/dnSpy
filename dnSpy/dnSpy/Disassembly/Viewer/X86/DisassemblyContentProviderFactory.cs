@@ -30,9 +30,9 @@ namespace dnSpy.Disassembly.Viewer.X86 {
 	[Export(typeof(DisassemblyContentProviderFactoryDependencies))]
 	sealed class DisassemblyContentProviderFactoryDependencies {
 		public DisassemblyContentSettings DisasmSettings { get; }
-		public IMasmDisassemblySettings MasmSettings { get; }
-		public INasmDisassemblySettings NasmSettings { get; }
-		public IGasDisassemblySettings GasSettings { get; }
+		public IX86DisassemblySettings MasmSettings { get; }
+		public IX86DisassemblySettings NasmSettings { get; }
+		public IX86DisassemblySettings GasSettings { get; }
 
 		[ImportingConstructor]
 		DisassemblyContentProviderFactoryDependencies(DisassemblyContentSettingsImpl disasm, MasmDisassemblySettingsImpl masm, NasmDisassemblySettingsImpl nasm, GasDisassemblySettingsImpl gas) {
@@ -77,7 +77,7 @@ namespace dnSpy.Disassembly.Viewer.X86 {
 		public DisassemblyContentProvider Create() {
 			var blocks = BlockFactory.Create(bitness, this.blocks);
 			var cachedSymResolver = new CachedSymbolResolver();
-			if (!(symbolResolver is null)) {
+			if (symbolResolver is not null) {
 				var addresses = GetPossibleSymbolAddresses(blocks);
 				if (addresses.Length != 0) {
 					var symbolResolverResults = new SymbolResolverResult[addresses.Length];
@@ -86,7 +86,7 @@ namespace dnSpy.Disassembly.Viewer.X86 {
 				}
 			}
 			foreach (var block in blocks) {
-				if (!string.IsNullOrEmpty(block.Label))
+				if (!string2.IsNullOrEmpty(block.Label))
 					cachedSymResolver.AddSymbol(block.Address, new SymbolResolverResult(SymbolKindUtils.ToSymbolKind(block.LabelKind), block.Label, block.Address), fakeSymbol: true);
 			}
 			return new DisassemblyContentProviderImpl(bitness, cachedSymResolver, deps.DisasmSettings, deps.MasmSettings, deps.NasmSettings, deps.GasSettings, formatterOptions, header, optimization, blocks, codeInfo, variableInfo, methodName, shortMethodName, moduleName);
@@ -140,7 +140,7 @@ namespace dnSpy.Disassembly.Viewer.X86 {
 									break;
 
 								case 8:
-									addresses.Add((ulong)(int)instr.MemoryDisplacement);
+									addresses.Add(instr.MemoryDisplacement64);
 									break;
 								}
 							}

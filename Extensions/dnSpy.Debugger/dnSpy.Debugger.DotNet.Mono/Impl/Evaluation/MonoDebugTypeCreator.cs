@@ -157,12 +157,12 @@ namespace dnSpy.Debugger.DotNet.Mono.Impl.Evaluation {
 			var fullName = realType.FullName;
 			if (fullName is null && realType.IsGenericType)
 				fullName = realType.GetGenericTypeDefinition().FullName;
-			if (string.IsNullOrEmpty(fullName))
+			if (string2.IsNullOrEmpty(fullName))
 				return null;
 			// This fails if fullName is a generic instantiated type and at least one generic argument
 			// is a type in another assembly, eg. List<MyType>.
 			var result = monoType.Module.Assembly.GetType(fullName);
-			if (!(result is null))
+			if (result is not null)
 				return result;
 			return monoTypeLoader?.Load(monoType.Assembly, fullName);
 		}
